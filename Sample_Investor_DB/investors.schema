@@ -1,0 +1,298 @@
+Metadata for file: investors.parquet
+
+version: 1
+num of rows: 32780
+created by: DuckDB version v1.3.2 (build 0b83e5d2f6)
+message duckdb_schema {
+  OPTIONAL BOOLEAN claimed;
+  OPTIONAL BOOLEAN can_edit;
+  OPTIONAL BOOLEAN include_in_list;
+  OPTIONAL BOOLEAN in_founder_investor_list;
+  OPTIONAL BOOLEAN in_diverse_investor_list;
+  OPTIONAL BOOLEAN in_female_investor_list;
+  OPTIONAL BOOLEAN in_invests_in_diverse_founders_investor_list;
+  OPTIONAL BOOLEAN in_invests_in_female_founders_investor_list;
+  OPTIONAL BYTE_ARRAY leads_rounds (UTF8);
+  OPTIONAL group person {
+    OPTIONAL BYTE_ARRAY slug (UTF8);
+    OPTIONAL BYTE_ARRAY first_name (UTF8);
+    OPTIONAL BYTE_ARRAY last_name (UTF8);
+    OPTIONAL BYTE_ARRAY name (UTF8);
+    OPTIONAL BYTE_ARRAY linkedin_url (UTF8);
+    OPTIONAL BYTE_ARRAY facebook_url (JSON);
+    OPTIONAL BYTE_ARRAY twitter_url (UTF8);
+    OPTIONAL BYTE_ARRAY crunchbase_url (UTF8);
+    OPTIONAL BYTE_ARRAY angellist_url (UTF8);
+    OPTIONAL group roles (LIST) {
+      REPEATED group list {
+        OPTIONAL BYTE_ARRAY element (UTF8);
+      }
+    }
+    OPTIONAL BYTE_ARRAY url (UTF8);
+    OPTIONAL BOOLEAN is_me;
+    OPTIONAL INT64 first_degree_count (INT_64);
+    OPTIONAL BOOLEAN is_on_target_list;
+    OPTIONAL BYTE_ARRAY relationship_strength (JSON);
+    OPTIONAL BYTE_ARRAY email_from_my_contacts_list (JSON);
+  }
+  OPTIONAL group stages (LIST) {
+    REPEATED group list {
+      OPTIONAL group element {
+        OPTIONAL BYTE_ARRAY kind (UTF8);
+        OPTIONAL BYTE_ARRAY display_name (UTF8);
+      }
+    }
+  }
+  OPTIONAL BYTE_ARRAY position (UTF8);
+  OPTIONAL BYTE_ARRAY min_investment (UTF8);
+  OPTIONAL BYTE_ARRAY max_investment (UTF8);
+  OPTIONAL BYTE_ARRAY target_investment (UTF8);
+  OPTIONAL BYTE_ARRAY areas_of_interest_freeform (UTF8);
+  OPTIONAL BYTE_ARRAY no_current_interest_freeform (UTF8);
+  OPTIONAL INT64 vote_count (INT_64);
+  OPTIONAL BYTE_ARRAY headline (UTF8);
+  OPTIONAL BYTE_ARRAY previous_position (UTF8);
+  OPTIONAL BYTE_ARRAY previous_firm (UTF8);
+  OPTIONAL group location {
+    OPTIONAL BYTE_ARRAY display_name (UTF8);
+  }
+  OPTIONAL group firm {
+    OPTIONAL BYTE_ARRAY current_fund_size (UTF8);
+    OPTIONAL BYTE_ARRAY name (UTF8);
+    OPTIONAL BYTE_ARRAY slug (UTF8);
+  }
+  OPTIONAL group degrees (LIST) {
+    REPEATED group list {
+      OPTIONAL group element {
+        OPTIONAL BYTE_ARRAY name (UTF8);
+        OPTIONAL BYTE_ARRAY field_of_study (UTF8);
+        OPTIONAL group school {
+          OPTIONAL BYTE_ARRAY name (UTF8);
+          OPTIONAL BYTE_ARRAY display_name (UTF8);
+          OPTIONAL INT64 total_student_count (INT_64);
+        }
+      }
+    }
+  }
+  OPTIONAL group positions (LIST) {
+    REPEATED group list {
+      OPTIONAL group element {
+        OPTIONAL BYTE_ARRAY title (UTF8);
+        OPTIONAL group company {
+          OPTIONAL BYTE_ARRAY name (UTF8);
+          OPTIONAL BYTE_ARRAY display_name (UTF8);
+          OPTIONAL INT64 total_employee_count (INT_64);
+        }
+        OPTIONAL group start_date {
+          OPTIONAL BYTE_ARRAY month (UTF8);
+          OPTIONAL BYTE_ARRAY year (UTF8);
+        }
+        OPTIONAL group end_date {
+          OPTIONAL BYTE_ARRAY month (UTF8);
+          OPTIONAL BYTE_ARRAY year (UTF8);
+        }
+      }
+    }
+  }
+  OPTIONAL group media_links (LIST) {
+    REPEATED group list {
+      OPTIONAL group element {
+        OPTIONAL BYTE_ARRAY url (UTF8);
+        OPTIONAL BYTE_ARRAY title (UTF8);
+        OPTIONAL BYTE_ARRAY image_url (UTF8);
+      }
+    }
+  }
+  OPTIONAL group investments_on_record {
+    OPTIONAL group pageInfo {
+      OPTIONAL BOOLEAN hasNextPage;
+    }
+    OPTIONAL INT64 record_count (INT_64);
+    OPTIONAL group edges (LIST) {
+      REPEATED group list {
+        OPTIONAL group element {
+          OPTIONAL group node {
+            OPTIONAL BYTE_ARRAY company_display_name (UTF8);
+            OPTIONAL group total_raised (LIST) {
+              REPEATED group list {
+                OPTIONAL BYTE_ARRAY element (UTF8);
+              }
+            }
+            OPTIONAL group coinvestor_names (LIST) {
+              REPEATED group list {
+                OPTIONAL BYTE_ARRAY element (UTF8);
+              }
+            }
+            OPTIONAL group investor_profile_funding_rounds (LIST) {
+              REPEATED group list {
+                OPTIONAL group element {
+                  OPTIONAL BOOLEAN is_lead;
+                  OPTIONAL group board_role {
+                    OPTIONAL BYTE_ARRAY title (UTF8);
+                  }
+                  OPTIONAL group funding_round {
+                    OPTIONAL BYTE_ARRAY stage (UTF8);
+                    OPTIONAL INT64 date (TIMESTAMP(MICROS,false));
+                    OPTIONAL BYTE_ARRAY amount (UTF8);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  OPTIONAL group investor_profile_funding_rounds {
+    OPTIONAL group pageInfo {
+      OPTIONAL BOOLEAN hasNextPage;
+    }
+    OPTIONAL INT64 record_count (INT_64);
+    OPTIONAL group edges (LIST) {
+      REPEATED group list {
+        OPTIONAL group element {
+          OPTIONAL group node {
+            OPTIONAL BOOLEAN is_lead;
+            OPTIONAL group board_role {
+              OPTIONAL BYTE_ARRAY title (UTF8);
+            }
+            OPTIONAL group funding_round {
+              OPTIONAL BYTE_ARRAY amount (UTF8);
+              OPTIONAL INT64 date (TIMESTAMP(MICROS,false));
+              OPTIONAL BYTE_ARRAY stage (UTF8);
+              OPTIONAL group company {
+                OPTIONAL BYTE_ARRAY display_name (UTF8);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  OPTIONAL group network_list_investor_profiles {
+    OPTIONAL BYTE_ARRAY list_type (UTF8);
+    OPTIONAL group edges (LIST) {
+      REPEATED group list {
+        OPTIONAL group element {
+          OPTIONAL group node {
+            OPTIONAL BYTE_ARRAY position (UTF8);
+            OPTIONAL group person {
+              OPTIONAL BYTE_ARRAY name (UTF8);
+              OPTIONAL BYTE_ARRAY first_name (UTF8);
+              OPTIONAL BYTE_ARRAY last_name (UTF8);
+              OPTIONAL BYTE_ARRAY slug (UTF8);
+            }
+            OPTIONAL group firm {
+              OPTIONAL BYTE_ARRAY name (UTF8);
+              OPTIONAL BYTE_ARRAY slug (UTF8);
+            }
+            OPTIONAL group image_urls (LIST) {
+              REPEATED group list {
+                OPTIONAL BYTE_ARRAY element (UTF8);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  OPTIONAL group network_list_scouts_and_angels_profiles {
+    OPTIONAL BYTE_ARRAY list_type (UTF8);
+    OPTIONAL group edges (LIST) {
+      REPEATED group list {
+        OPTIONAL group element {
+          OPTIONAL group node {
+            OPTIONAL BYTE_ARRAY position (UTF8);
+            OPTIONAL group person {
+              OPTIONAL BYTE_ARRAY name (UTF8);
+              OPTIONAL BYTE_ARRAY first_name (UTF8);
+              OPTIONAL BYTE_ARRAY last_name (UTF8);
+              OPTIONAL BYTE_ARRAY slug (UTF8);
+            }
+            OPTIONAL group firm {
+              OPTIONAL BYTE_ARRAY name (UTF8);
+              OPTIONAL BYTE_ARRAY slug (UTF8);
+            }
+            OPTIONAL group image_urls (LIST) {
+              REPEATED group list {
+                OPTIONAL BYTE_ARRAY element (UTF8);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  OPTIONAL group investing_connections {
+    OPTIONAL INT64 record_count (INT_64);
+    OPTIONAL group edges (LIST) {
+      REPEATED group list {
+        OPTIONAL group element {
+          OPTIONAL group node {
+            OPTIONAL group target_person {
+              OPTIONAL BYTE_ARRAY name (UTF8);
+              OPTIONAL BYTE_ARRAY slug (UTF8);
+              OPTIONAL BYTE_ARRAY first_name (UTF8);
+              OPTIONAL BYTE_ARRAY last_name (UTF8);
+              OPTIONAL group investor_profile {
+                OPTIONAL group firm {
+                  OPTIONAL BYTE_ARRAY name (UTF8);
+                  OPTIONAL BYTE_ARRAY slug (UTF8);
+                }
+                OPTIONAL group image_urls (LIST) {
+                  REPEATED group list {
+                    OPTIONAL BYTE_ARRAY element (UTF8);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  OPTIONAL BOOLEAN has_profile_vote;
+  OPTIONAL group image_urls_edit_mode (LIST) {
+    REPEATED group list {
+      OPTIONAL BYTE_ARRAY element (UTF8);
+    }
+  }
+  OPTIONAL BYTE_ARRAY is_preferred_coinvestor (JSON);
+  OPTIONAL group investment_locations (LIST) {
+    REPEATED group list {
+      OPTIONAL group element {
+        OPTIONAL BYTE_ARRAY kind (UTF8);
+        OPTIONAL BYTE_ARRAY display_name (UTF8);
+      }
+    }
+  }
+  OPTIONAL group areas_of_interest (LIST) {
+    REPEATED group list {
+      OPTIONAL group element {
+        OPTIONAL BYTE_ARRAY kind (UTF8);
+        OPTIONAL BYTE_ARRAY display_name (UTF8);
+      }
+    }
+  }
+  OPTIONAL group image_urls (LIST) {
+    REPEATED group list {
+      OPTIONAL BYTE_ARRAY element (UTF8);
+    }
+  }
+  OPTIONAL group investor_lists (LIST) {
+    REPEATED group list {
+      OPTIONAL group element {
+        OPTIONAL BYTE_ARRAY slug (UTF8);
+        OPTIONAL BYTE_ARRAY stage_name (UTF8);
+        OPTIONAL group vertical {
+          OPTIONAL BYTE_ARRAY kind (UTF8);
+          OPTIONAL BYTE_ARRAY display_name (UTF8);
+        }
+        OPTIONAL group location {
+          OPTIONAL BYTE_ARRAY kind (UTF8);
+          OPTIONAL BYTE_ARRAY display_name (UTF8);
+        }
+      }
+    }
+  }
+}
