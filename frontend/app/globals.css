@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0.9779 0.0042 56.3756;
+    --foreground: 0.2178 0 0;
+    --card: 0.9779 0.0042 56.3756;
+    --card-foreground: 0.2178 0 0;
+    --popover: 0.9779 0.0042 56.3756;
+    --popover-foreground: 0.2178 0 0;
+    --primary: 0.4650 0.1470 24.9381;
+    --primary-foreground: 1.0000 0 0;
+    --secondary: 0.9625 0.0385 89.0943;
+    --secondary-foreground: 0.4847 0.1022 75.1153;
+    --muted: 0.9431 0.0068 53.4442;
+    --muted-foreground: 0.4444 0.0096 73.6390;
+    --accent: 0.9619 0.0580 95.6174;
+    --accent-foreground: 0.3958 0.1331 25.7230;
+    --destructive: 0.4437 0.1613 26.8994;
+    --destructive-foreground: 1.0000 0 0;
+    --border: 0.9355 0.0324 80.9937;
+    --input: 0.9355 0.0324 80.9937;
+    --ring: 0.4650 0.1470 24.9381;
+    --radius: 0.375rem;
+    --chart-1: 0.5054 0.1905 27.5181;
+    --chart-2: 0.4650 0.1470 24.9381;
+    --chart-3: 0.3958 0.1331 25.7230;
+    --chart-4: 0.5553 0.1455 48.9975;
+    --chart-5: 0.4732 0.1247 46.2007;
+  }
+
+  .dark {
+    --background: 0.2161 0.0061 56.0434;
+    --foreground: 0.9699 0.0013 106.4238;
+    --card: 0.2685 0.0063 34.2976;
+    --card-foreground: 0.9699 0.0013 106.4238;
+    --popover: 0.2685 0.0063 34.2976;
+    --popover-foreground: 0.9699 0.0013 106.4238;
+    --primary: 0.5054 0.1905 27.5181;
+    --primary-foreground: 0.9779 0.0042 56.3756;
+    --secondary: 0.4732 0.1247 46.2007;
+    --secondary-foreground: 0.9619 0.0580 95.6174;
+    --muted: 0.2685 0.0063 34.2976;
+    --muted-foreground: 0.8687 0.0043 56.3660;
+    --accent: 0.5553 0.1455 48.9975;
+    --accent-foreground: 0.9619 0.0580 95.6174;
+    --destructive: 0.6368 0.2078 25.3313;
+    --destructive-foreground: 1.0000 0 0;
+    --border: 0.3741 0.0087 67.5582;
+    --input: 0.3741 0.0087 67.5582;
+    --ring: 0.5054 0.1905 27.5181;
+    --chart-1: 0.7106 0.1661 22.2162;
+    --chart-2: 0.6368 0.2078 25.3313;
+    --chart-3: 0.5771 0.2152 27.3250;
+    --chart-4: 0.8369 0.1644 84.4286;
+    --chart-5: 0.7686 0.1647 70.0804;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Font variables are now loaded via Next.js font optimization */

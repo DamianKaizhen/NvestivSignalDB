@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Test</title>
+</head>
+<body>
+    <h1>CORS Test for Nvestiv API</h1>
+    <div id="results"></div>
+    <button onclick="testAPI()">Test API Connection</button>
+
+    <script>
+        async function testAPI() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Testing API connection...</p>';
+            
+            try {
+                // Test health endpoint
+                console.log('Testing health endpoint...');
+                const healthResponse = await fetch('http://localhost:3010/health', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+                
+                if (!healthResponse.ok) {
+                    throw new Error(`Health check failed: ${healthResponse.status}`);
+                }
+                
+                const healthData = await healthResponse.json();
+                console.log('Health check successful:', healthData);
+                
+                // Test network stats
+                console.log('Testing network stats endpoint...');
+                const statsResponse = await fetch('http://localhost:3010/api/network/stats', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+                
+                if (!statsResponse.ok) {
+                    throw new Error(`Network stats failed: ${statsResponse.status}`);
+                }
+                
+                const statsData = await statsResponse.json();
+                console.log('Network stats successful:', statsData);
+                
+                // Test investor search
+                console.log('Testing investor search endpoint...');
+                const searchResponse = await fetch('http://localhost:3010/api/investors/search?limit=2', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+                
+                if (!searchResponse.ok) {
+                    throw new Error(`Investor search failed: ${searchResponse.status}`);
+                }
+                
+                const searchData = await searchResponse.json();
+                console.log('Investor search successful:', searchData);
+                
+                results.innerHTML = `
+                    <div style="color: green;">
+                        <h2>✅ All API Tests Passed!</h2>
+                        <p><strong>Health Status:</strong> ${healthData.status}</p>
+                        <p><strong>Total Investors:</strong> ${statsData.totalInvestors.toLocaleString()}</p>
+                        <p><strong>Total Firms:</strong> ${statsData.totalFirms.toLocaleString()}</p>
+                        <p><strong>Sample Investors Found:</strong> ${searchData.data.investors.length}</p>
+                        <p><strong>CORS:</strong> Working correctly from http://localhost:3013</p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('API test failed:', error);
+                results.innerHTML = `
+                    <div style="color: red;">
+                        <h2>❌ API Test Failed</h2>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p>Check browser console for details.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Auto-run test when page loads
+        window.onload = function() {
+            testAPI();
+        };
+    </script>
+</body>
+</html>

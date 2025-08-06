@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  nvestiv-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nvestiv-signal-db
+    ports:
+      - "3010:3010"  # API Server
+      - "3013:3013"  # Frontend
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:3010
+    volumes:
+      # Mount database files for persistence (if they exist)
+      - ./investor_network_full.db:/app/investor_network_full.db:rw
+      - ./Sample_Investor_DB:/app/Sample_Investor_DB:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - nvestiv-network
+
+networks:
+  nvestiv-network:
+    driver: bridge

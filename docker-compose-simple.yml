@@ -1,0 +1,32 @@
+services:
+  api-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: nvestiv-api
+    ports:
+      - "3010:3010"
+    volumes:
+      - ./investor_network_full.db:/app/investor_network_full.db:rw
+      - ./Sample_Investor_DB:/app/Sample_Investor_DB:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nvestiv-frontend
+    ports:
+      - "3013:3013"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3010
+    depends_on:
+      api-server:
+        condition: service_healthy
+    restart: unless-stopped

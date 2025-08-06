@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+npm-debug.log*
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# Development files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+*.log
+server.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Testing
+coverage/
+.nyc_output/
+
+# Documentation
+*.md
+!README.md
+
+# Temporary files
+tmp/
+temp/
+test-summary.txt
+comprehensive-test-report.md
+
+# Test files
+tests/
+test_*.js
+test_*.html
+run-comprehensive-tests.js
+check_server.sh
+diagnose_server.js
+demo*.js
+etl_*.js
+network_analysis.js
+simple_server.js
+start_server.js
+test-server-runner.js

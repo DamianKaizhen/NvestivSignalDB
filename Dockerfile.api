@@ -1,0 +1,22 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apk add --no-cache sqlite curl
+
+# Copy backend files
+COPY package*.json ./
+COPY api_server.js ./
+COPY network_analysis_full.js ./
+COPY *.db ./
+COPY Sample_Investor_DB/ ./Sample_Investor_DB/
+
+# Install dependencies
+RUN npm install
+
+# Expose API port
+EXPOSE 3010
+
+# Start API server
+CMD ["node", "api_server.js"]
