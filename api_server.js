@@ -2,6 +2,18 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { FullDatasetNetworkAnalysis } = require('./network_analysis_full');
+const { 
+    responseMiddleware, 
+    validateRequiredParams, 
+    validateParamTypes, 
+    validateNumericRanges,
+    handleDatabaseError,
+    sanitizers,
+    startTiming,
+    checkRateLimit,
+    API_ERROR_CODES,
+    HTTP_STATUS_CODES 
+} = require('./utils/apiResponse');
 
 const app = express();
 const port = process.env.PORT || 3010;
@@ -41,6 +53,9 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Add standardized response middleware
+app.use(responseMiddleware);
+
 // Initialize full dataset network analyzer
 const analyzer = new FullDatasetNetworkAnalysis();
 
@@ -57,10 +72,9 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
     try {
         const stats = analyzer.getFullDatasetStatistics();
-        res.json({ 
+        const healthData = { 
             status: 'healthy', 
-            timestamp: new Date().toISOString(),
-            version: '2.0.0',
+            version: '2.0.1',
             database: {
                 status: 'connected',
                 totalInvestors: stats.totalInvestors,
@@ -72,7 +86,9 @@ app.get('/health', (req, res) => {
                 aiSearch: 'enabled',
                 networkGraph: 'enabled',
                 pagination: 'enabled',
-                errorHandling: 'enhanced'
+                errorHandling: 'enhanced',
+                standardizedResponses: 'enabled',
+                inputValidation: 'enabled'
             },
             endpoints: {
                 investors: {
@@ -99,114 +115,190 @@ app.get('/health', (req, res) => {
                     market: 'GET /api/bi/market-intelligence'
                 }
             }
-        });
+        };
+        
+        res.success(healthData, { apiVersion: '2.0.1', responseFormat: 'standardized' });
     } catch (error) {
-        res.status(503).json({ 
-            status: 'unhealthy', 
-            timestamp: new Date().toISOString(),
-            error: error.message 
-        });
+        res.error(
+            'Health check failed', 
+            API_ERROR_CODES.INTERNAL_ERROR, 
+            HTTP_STATUS_CODES.SERVICE_UNAVAILABLE,
+            { originalError: error.message }
+        );
     }
 });
 
 // Get network statistics
 app.get('/api/network/stats', (req, res) => {
+    const endTiming = startTiming('network-stats');
+    
     try {
         const stats = analyzer.getFullDatasetStatistics();
-        // Add lastUpdated field that frontend expects
+        
+        // Standardize response format
         const response = {
             ...stats,
             lastUpdated: new Date().toISOString()
         };
-        res.json(response);
+        
+        const executionTime = endTiming();
+        
+        res.success(
+            response, 
+            { 
+                cached: false,
+                executionTime,
+                dataSource: 'live'
+            }
+        );
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Network stats error:', error);
+        const dbError = handleDatabaseError(error, 'fetching network statistics');
+        res.error(
+            dbError.response.error.message,
+            dbError.response.error.code,
+            dbError.statusCode,
+            { operation: 'network_stats' }
+        );
     }
 });
 
 // Enhanced investor search with better pagination and sorting
 app.get('/api/investors/search', (req, res) => {
+    const endTiming = startTiming('investor-search');
+    
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20;
-        const offset = (page - 1) * limit;
+        // Validate and sanitize parameters
+        const validationParams = {
+            page: sanitizers.number(req.query.page, { min: 1, max: 1000, integer: true }) || 1,
+            limit: sanitizers.number(req.query.limit, { min: 1, max: 100, integer: true }) || 20,
+            minConnections: req.query.minConnections ? sanitizers.number(req.query.minConnections, { min: 0, integer: true }) : undefined,
+            maxConnections: req.query.maxConnections ? sanitizers.number(req.query.maxConnections, { min: 0, integer: true }) : undefined,
+            minQualityScore: req.query.minQualityScore ? sanitizers.number(req.query.minQualityScore, { min: 0, max: 100, integer: true }) : undefined
+        };
+        
+        // Validate numeric ranges
+        const rangeValidation = validateNumericRanges(validationParams, {
+            page: { min: 1, max: 1000 },
+            limit: { min: 1, max: 100 },
+            minConnections: { min: 0 },
+            maxConnections: { min: 0 },
+            minQualityScore: { min: 0, max: 100 }
+        });
+        
+        if (rangeValidation) {
+            return res.error(
+                rangeValidation.response.error.message,
+                rangeValidation.response.error.code,
+                rangeValidation.statusCode,
+                rangeValidation.response.error.details
+            );
+        }
+        
+        // Check rate limiting
+        const rateLimitCheck = checkRateLimit(req.ip || 'unknown', 60, 60);
+        if (rateLimitCheck) {
+            return res.error(
+                rateLimitCheck.response.error.message,
+                rateLimitCheck.response.error.code,
+                rateLimitCheck.statusCode,
+                rateLimitCheck.response.error.details
+            );
+        }
+        
+        const { page, limit } = validationParams;
         
         const criteria = {
-            firmName: req.query.firm,
-            minConnections: req.query.minConnections ? parseInt(req.query.minConnections) : undefined,
-            maxConnections: req.query.maxConnections ? parseInt(req.query.maxConnections) : undefined,
-            hasLinkedIn: req.query.hasLinkedIn === 'true',
-            hasInvestments: req.query.hasInvestments === 'true',
+            firmName: sanitizers.string(req.query.firm, { maxLength: 100 }),
+            minConnections: validationParams.minConnections,
+            maxConnections: validationParams.maxConnections,
+            hasLinkedIn: sanitizers.boolean(req.query.hasLinkedIn),
+            hasInvestments: sanitizers.boolean(req.query.hasInvestments),
             networkTier: req.query.networkTier,
             sector: req.query.sector,
             stage: req.query.stage,
             dataTier: req.query.dataTier,
-            minQualityScore: req.query.minQualityScore ? parseInt(req.query.minQualityScore) : undefined,
+            minQualityScore: validationParams.minQualityScore,
             sortBy: req.query.sortBy || 'connections',
-            isInFounderList: req.query.isInFounderList === 'true',
-            isDiverseInvestor: req.query.isDiverseInvestor === 'true',
-            leadsRounds: req.query.leadsRounds === 'true',
-            isClaimed: req.query.isClaimed ? req.query.isClaimed === 'true' : undefined,
+            isInFounderList: sanitizers.boolean(req.query.isInFounderList),
+            isDiverseInvestor: sanitizers.boolean(req.query.isDiverseInvestor),
+            leadsRounds: sanitizers.boolean(req.query.leadsRounds),
+            isClaimed: req.query.isClaimed ? sanitizers.boolean(req.query.isClaimed) : undefined,
             limit: limit + 1 // Get one extra to check if there are more pages
         };
 
         const results = analyzer.findInvestorsAdvanced(criteria);
         const hasMore = results.length > limit;
         const investors = hasMore ? results.slice(0, limit) : results;
-
-        res.json({
-            success: true,
-            data: {
-                investors,
-                pagination: {
-                    page,
-                    limit,
-                    hasMore,
-                    total: hasMore ? null : investors.length // Don't calculate total for performance
-                }
+        
+        const executionTime = endTiming();
+        
+        res.search(
+            investors,
+            {
+                page,
+                limit,
+                hasMore,
+                total: hasMore ? null : investors.length
             },
-            meta: {
-                searchCriteria: criteria,
-                searchTime: new Date().toISOString()
+            criteria,
+            {
+                executionTime,
+                performanceOptimized: true
             }
-        });
+        );
     } catch (error) {
         console.error('Search error:', error);
-        res.status(500).json({ 
-            success: false,
-            error: {
-                message: error.message,
-                code: 'SEARCH_ERROR'
-            }
-        });
+        const dbError = handleDatabaseError(error, 'investor search');
+        res.error(
+            dbError.response.error.message,
+            dbError.response.error.code,
+            dbError.statusCode,
+            { operation: 'investor_search', originalError: error.message }
+        );
     }
 });
 
 // Get individual investor details with full profile data (supports both ID and slug)
 app.get('/api/investors/:identifier', (req, res) => {
+    const endTiming = startTiming('investor-detail');
+    
     try {
-        const identifier = req.params.identifier;
+        const identifier = sanitizers.string(req.params.identifier, { maxLength: 100 });
+        
+        if (!identifier) {
+            return res.error(
+                'Invalid identifier provided',
+                API_ERROR_CODES.INVALID_PARAMETER,
+                HTTP_STATUS_CODES.BAD_REQUEST
+            );
+        }
+        
         const isNumericId = !isNaN(parseInt(identifier)) && parseInt(identifier).toString() === identifier;
         
         let investor = null;
         
         if (isNumericId) {
-            // Lookup by numeric ID
             const investorId = parseInt(identifier);
+            if (investorId <= 0) {
+                return res.error(
+                    'Invalid investor ID',
+                    API_ERROR_CODES.INVALID_ID,
+                    HTTP_STATUS_CODES.BAD_REQUEST
+                );
+            }
             investor = getInvestorById(investorId);
         } else {
-            // Lookup by slug
             investor = getInvestorBySlug(identifier);
         }
         
         if (!investor) {
-            return res.status(404).json({ 
-                success: false,
-                error: {
-                    message: `Investor not found${isNumericId ? ' with ID' : ' with slug'}: ${identifier}`,
-                    code: 'INVESTOR_NOT_FOUND'
-                }
-            });
+            return res.error(
+                `Investor not found${isNumericId ? ' with ID' : ' with slug'}: ${identifier}`,
+                API_ERROR_CODES.INVESTOR_NOT_FOUND,
+                HTTP_STATUS_CODES.NOT_FOUND,
+                { identifier, lookup_method: isNumericId ? 'id' : 'slug' }
+            );
         }
 
         // Get additional profile data
@@ -217,43 +309,70 @@ app.get('/api/investors/:identifier', (req, res) => {
             investment_focus: getInvestmentFocus(investor),
             network_analysis: getNetworkAnalysis(investor)
         };
+        
+        const executionTime = endTiming();
 
-        res.json({
-            success: true,
-            data: {
-                investor: profile
-            },
-            meta: {
-                retrieved_at: new Date().toISOString(),
-                profile_version: '2.0',
-                lookup_method: isNumericId ? 'id' : 'slug'
+        res.success(
+            { investor: profile },
+            {
+                profile_version: '2.1',
+                lookup_method: isNumericId ? 'id' : 'slug',
+                executionTime,
+                cached: false
             }
-        });
+        );
     } catch (error) {
         console.error('Get investor error:', error);
-        res.status(500).json({ 
-            success: false,
-            error: {
-                message: error.message,
-                code: 'FETCH_ERROR'
-            }
-        });
+        const dbError = handleDatabaseError(error, 'fetching investor details');
+        res.error(
+            dbError.response.error.message,
+            dbError.response.error.code,
+            dbError.statusCode,
+            { operation: 'investor_detail', identifier: req.params.identifier }
+        );
     }
 });
 
 // Investor matching
 app.post('/api/investors/match', (req, res) => {
+    const endTiming = startTiming('investor-match');
+    
     try {
         const targetProfile = req.body;
+        
+        if (!targetProfile || Object.keys(targetProfile).length === 0) {
+            return res.error(
+                'Target profile is required',
+                API_ERROR_CODES.INVALID_REQUEST,
+                HTTP_STATUS_CODES.BAD_REQUEST,
+                { required_fields: 'targetProfile object with matching criteria' }
+            );
+        }
+        
         const matches = analyzer.matchInvestorsAdvanced(targetProfile);
         
-        res.json({
-            matches: matches.length,
-            targetProfile,
-            results: matches
-        });
+        const executionTime = endTiming();
+        
+        res.success(
+            {
+                matches: matches.length,
+                targetProfile,
+                results: matches
+            },
+            {
+                executionTime,
+                algorithm: 'advanced_matching_v2',
+                match_confidence: matches.length > 0 ? 'high' : 'low'
+            }
+        );
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Investor matching error:', error);
+        res.error(
+            'Investor matching failed',
+            API_ERROR_CODES.INTERNAL_ERROR,
+            HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+            { operation: 'investor_match', originalError: error.message }
+        );
     }
 });
 
@@ -302,38 +421,106 @@ app.post('/api/reports/recommendations', (req, res) => {
 
 // Export network data for visualization
 app.get('/api/network/export', (req, res) => {
+    const endTiming = startTiming('network-export');
+    
     try {
-        const limit = parseInt(req.query.limit) || 50;
+        const limit = sanitizers.number(req.query.limit, { min: 10, max: 1000, integer: true }) || 50;
+        
+        const rangeValidation = validateNumericRanges({ limit }, {
+            limit: { min: 10, max: 1000 }
+        });
+        
+        if (rangeValidation) {
+            return res.error(
+                rangeValidation.response.error.message,
+                rangeValidation.response.error.code,
+                rangeValidation.statusCode,
+                rangeValidation.response.error.details
+            );
+        }
+        
         const networkData = analyzer.exportNetworkData(limit);
         
-        res.json(networkData);
+        const executionTime = endTiming();
+        
+        res.success(
+            networkData,
+            {
+                export_format: 'json',
+                data_limit: limit,
+                executionTime,
+                export_version: '2.1'
+            }
+        );
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Network export error:', error);
+        const dbError = handleDatabaseError(error, 'exporting network data');
+        res.error(
+            dbError.response.error.message,
+            dbError.response.error.code,
+            dbError.statusCode,
+            { operation: 'network_export' }
+        );
     }
 });
 
 // Get top investors by various metrics
 app.get('/api/investors/top', (req, res) => {
+    const endTiming = startTiming('top-investors');
+    
     try {
-        const metric = req.query.by || 'connections'; // connections, investments, network_tier
-        const limit = parseInt(req.query.limit) || 10;
+        const metric = req.query.by || 'connections';
+        const limit = sanitizers.number(req.query.limit, { min: 1, max: 100, integer: true }) || 10;
         
-        let orderBy = 'first_degree_count DESC';
-        if (metric === 'investments') {
-            orderBy = 'investment_count DESC';
-        } else if (metric === 'network_tier') {
-            orderBy = "CASE network_tier WHEN 'Highly Connected' THEN 1 WHEN 'Well Connected' THEN 2 WHEN 'Connected' THEN 3 ELSE 4 END";
+        // Validate metric parameter
+        const validMetrics = ['connections', 'investments', 'network_tier'];
+        if (!validMetrics.includes(metric)) {
+            return res.error(
+                `Invalid metric parameter. Must be one of: ${validMetrics.join(', ')}`,
+                API_ERROR_CODES.INVALID_PARAMETER,
+                HTTP_STATUS_CODES.BAD_REQUEST,
+                { valid_values: validMetrics }
+            );
+        }
+        
+        // Validate limit
+        const rangeValidation = validateNumericRanges({ limit }, {
+            limit: { min: 1, max: 100 }
+        });
+        
+        if (rangeValidation) {
+            return res.error(
+                rangeValidation.response.error.message,
+                rangeValidation.response.error.code,
+                rangeValidation.statusCode,
+                rangeValidation.response.error.details
+            );
         }
 
         const results = analyzer.findInvestors({ limit });
         
-        res.json({
-            metric,
-            count: results.length,
-            investors: results
-        });
+        const executionTime = endTiming();
+        
+        res.success(
+            {
+                metric,
+                count: results.length,
+                investors: results
+            },
+            {
+                executionTime,
+                ranking_algorithm: 'multi_metric_v2'
+            }
+        );
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Top investors error:', error);
+        const dbError = handleDatabaseError(error, 'fetching top investors');
+        res.error(
+            dbError.response.error.message,
+            dbError.response.error.code,
+            dbError.statusCode,
+            { operation: 'top_investors', metric: req.query.by }
+        );
     }
 });
 
@@ -357,107 +544,169 @@ app.get('/api/firms/analysis', (req, res) => {
 
 // List all investment firms with pagination
 app.get('/api/firms', (req, res) => {
+    const endTiming = startTiming('firms-list');
+    
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20;
-        const sortBy = req.query.sortBy || 'investor_count'; // investor_count, avg_connections, fund_size
+        // Validate and sanitize parameters
+        const page = sanitizers.number(req.query.page, { min: 1, max: 1000, integer: true }) || 1;
+        const limit = sanitizers.number(req.query.limit, { min: 1, max: 100, integer: true }) || 20;
+        const sortBy = req.query.sortBy || 'investor_count';
         const sortOrder = req.query.sortOrder || 'desc';
-        const search = req.query.search;
+        const search = sanitizers.string(req.query.search, { maxLength: 100 });
+        
+        // Validate parameters
+        const rangeValidation = validateNumericRanges({ page, limit }, {
+            page: { min: 1, max: 1000 },
+            limit: { min: 1, max: 100 }
+        });
+        
+        if (rangeValidation) {
+            return res.error(
+                rangeValidation.response.error.message,
+                rangeValidation.response.error.code,
+                rangeValidation.statusCode,
+                rangeValidation.response.error.details
+            );
+        }
+        
+        // Validate sortBy parameter
+        const validSortFields = ['investor_count', 'avg_connections', 'fund_size', 'name'];
+        if (!validSortFields.includes(sortBy)) {
+            return res.error(
+                `Invalid sortBy parameter. Must be one of: ${validSortFields.join(', ')}`,
+                API_ERROR_CODES.INVALID_PARAMETER,
+                HTTP_STATUS_CODES.BAD_REQUEST,
+                { valid_values: validSortFields }
+            );
+        }
+        
+        // Validate sortOrder parameter
+        if (!['asc', 'desc'].includes(sortOrder)) {
+            return res.error(
+                'Invalid sortOrder parameter. Must be "asc" or "desc"',
+                API_ERROR_CODES.INVALID_PARAMETER,
+                HTTP_STATUS_CODES.BAD_REQUEST,
+                { valid_values: ['asc', 'desc'] }
+            );
+        }
 
         // Get firms from database with enhanced query
         const firms = getFirmsWithPagination(page, limit, sortBy, sortOrder, search);
         
-        res.json({
-            success: true,
-            data: {
-                firms: firms.data,
-                pagination: {
-                    page,
-                    limit,
-                    hasMore: firms.hasMore,
-                    total: firms.total
-                }
+        const executionTime = endTiming();
+        
+        res.paginated(
+            firms.data,
+            {
+                page,
+                limit,
+                hasMore: firms.hasMore,
+                total: firms.total
             },
-            meta: {
+            {
                 searchTerm: search,
                 sortBy,
                 sortOrder,
-                retrieved_at: new Date().toISOString()
+                executionTime
             }
-        });
+        );
     } catch (error) {
         console.error('Get firms error:', error);
-        res.status(500).json({ 
-            success: false,
-            error: {
-                message: error.message,
-                code: 'FIRMS_FETCH_ERROR'
-            }
-        });
+        const dbError = handleDatabaseError(error, 'fetching firms list');
+        res.error(
+            dbError.response.error.message,
+            dbError.response.error.code,
+            dbError.statusCode,
+            { operation: 'firms_list' }
+        );
     }
 });
 
 // Individual firm details with associated investors
 app.get('/api/firms/:id', (req, res) => {
+    const endTiming = startTiming('firm-detail');
+    
     try {
-        const firmId = parseInt(req.params.id);
+        const firmId = sanitizers.number(req.params.id, { integer: true });
         
-        if (isNaN(firmId)) {
-            return res.status(400).json({ 
-                success: false,
-                error: {
-                    message: 'Invalid firm ID',
-                    code: 'INVALID_ID'
-                }
-            });
+        if (!firmId || firmId <= 0) {
+            return res.error(
+                'Invalid firm ID',
+                API_ERROR_CODES.INVALID_ID,
+                HTTP_STATUS_CODES.BAD_REQUEST,
+                { provided_id: req.params.id }
+            );
         }
 
         const firmDetails = getFirmDetails(firmId);
         
         if (!firmDetails) {
-            return res.status(404).json({ 
-                success: false,
-                error: {
-                    message: 'Firm not found',
-                    code: 'FIRM_NOT_FOUND'
-                }
-            });
+            return res.error(
+                'Firm not found',
+                API_ERROR_CODES.FIRM_NOT_FOUND,
+                HTTP_STATUS_CODES.NOT_FOUND,
+                { firm_id: firmId }
+            );
         }
+        
+        const executionTime = endTiming();
 
-        res.json({
-            success: true,
-            data: {
-                firm: firmDetails
-            },
-            meta: {
-                retrieved_at: new Date().toISOString()
+        res.success(
+            { firm: firmDetails },
+            {
+                data_version: '2.1',
+                executionTime,
+                cached: false
             }
-        });
+        );
     } catch (error) {
         console.error('Get firm details error:', error);
-        res.status(500).json({ 
-            success: false,
-            error: {
-                message: error.message,
-                code: 'FIRM_FETCH_ERROR'
-            }
-        });
+        const dbError = handleDatabaseError(error, 'fetching firm details');
+        res.error(
+            dbError.response.error.message,
+            dbError.response.error.code,
+            dbError.statusCode,
+            { operation: 'firm_detail', firm_id: req.params.id }
+        );
     }
 });
 
 // Network visualization data (nodes and edges)
 app.get('/api/network/graph', (req, res) => {
+    const endTiming = startTiming('network-graph');
+    
     try {
-        const limit = parseInt(req.query.limit) || 100;
-        const minConnections = parseInt(req.query.minConnections) || 100;
-        const includeEdges = req.query.includeEdges !== 'false';
-        const focusId = req.query.focusId ? parseInt(req.query.focusId) : null;
+        // Validate and sanitize parameters
+        const limit = sanitizers.number(req.query.limit, { min: 10, max: 1000, integer: true }) || 100;
+        const minConnections = sanitizers.number(req.query.minConnections, { min: 0, max: 10000, integer: true }) || 100;
+        const includeEdges = sanitizers.boolean(req.query.includeEdges);
+        const focusId = req.query.focusId ? sanitizers.number(req.query.focusId, { min: 1, integer: true }) : null;
+        
+        // Validate numeric ranges
+        const rangeValidation = validateNumericRanges(
+            { limit, minConnections, focusId: focusId || 1 }, 
+            {
+                limit: { min: 10, max: 1000 },
+                minConnections: { min: 0, max: 10000 },
+                focusId: { min: 1 }
+            }
+        );
+        
+        if (rangeValidation) {
+            return res.error(
+                rangeValidation.response.error.message,
+                rangeValidation.response.error.code,
+                rangeValidation.statusCode,
+                rangeValidation.response.error.details
+            );
+        }
 
         const networkData = generateNetworkGraph(limit, minConnections, includeEdges, focusId);
         
-        res.json({
-            success: true,
-            data: {
+        const executionTime = endTiming();
+        
+        res.success(
+            {
                 nodes: networkData.nodes,
                 edges: includeEdges ? networkData.edges : [],
                 stats: {
@@ -467,64 +716,89 @@ app.get('/api/network/graph', (req, res) => {
                     focusNode: focusId
                 }
             },
-            meta: {
-                generated_at: new Date().toISOString(),
-                parameters: { limit, minConnections, includeEdges, focusId }
+            {
+                parameters: { limit, minConnections, includeEdges, focusId },
+                executionTime,
+                optimized: true
             }
-        });
+        );
     } catch (error) {
         console.error('Network graph error:', error);
-        res.status(500).json({ 
-            success: false,
-            error: {
-                message: error.message,
-                code: 'NETWORK_GRAPH_ERROR'
-            }
-        });
+        const dbError = handleDatabaseError(error, 'generating network graph');
+        res.error(
+            dbError.response.error.message,
+            dbError.response.error.code,
+            dbError.statusCode,
+            { operation: 'network_graph', parameters: req.query }
+        );
     }
 });
 
 // Natural language search endpoint
 app.get('/api/search/ai', (req, res) => {
+    const endTiming = startTiming('ai-search');
+    
     try {
-        const query = req.query.q;
-        const limit = parseInt(req.query.limit) || 10;
+        const query = sanitizers.string(req.query.q, { maxLength: 200 });
+        const limit = sanitizers.number(req.query.limit, { min: 1, max: 50, integer: true }) || 10;
         
-        if (!query || query.trim().length < 3) {
-            return res.status(400).json({ 
-                success: false,
-                error: {
-                    message: 'Search query must be at least 3 characters long',
-                    code: 'INVALID_QUERY'
-                }
-            });
+        // Validate required parameters
+        const validation = validateRequiredParams({ q: query }, ['q']);
+        if (validation) {
+            return res.error(
+                validation.response.error.message,
+                validation.response.error.code,
+                validation.statusCode,
+                validation.response.error.details
+            );
+        }
+        
+        if (query.length < 3) {
+            return res.error(
+                'Search query must be at least 3 characters long',
+                API_ERROR_CODES.INVALID_QUERY,
+                HTTP_STATUS_CODES.BAD_REQUEST,
+                { query_length: query.length, minimum_length: 3 }
+            );
+        }
+        
+        // Rate limiting for AI search (more restrictive)
+        const rateLimitCheck = checkRateLimit(`ai-search-${req.ip}`, 20, 60);
+        if (rateLimitCheck) {
+            return res.error(
+                rateLimitCheck.response.error.message,
+                rateLimitCheck.response.error.code,
+                rateLimitCheck.statusCode,
+                rateLimitCheck.response.error.details
+            );
         }
 
         const searchResults = performAISearch(query, limit);
         
-        res.json({
-            success: true,
-            data: {
+        const executionTime = endTiming();
+        
+        res.success(
+            {
                 query,
                 results: searchResults.results,
                 interpretation: searchResults.interpretation,
                 suggestions: searchResults.suggestions
             },
-            meta: {
-                searchTime: new Date().toISOString(),
+            {
                 resultsCount: searchResults.results.length,
-                confidence: searchResults.confidence
+                confidence: searchResults.confidence,
+                executionTime,
+                searchType: 'ai_powered'
             }
-        });
+        );
     } catch (error) {
         console.error('AI search error:', error);
-        res.status(500).json({ 
-            success: false,
-            error: {
-                message: error.message,
-                code: 'AI_SEARCH_ERROR'
-            }
-        });
+        res.error(
+            'AI search failed',
+            API_ERROR_CODES.AI_SEARCH_ERROR,
+            HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+            { operation: 'ai_search', query: req.query.q, originalError: error.message }
+        );
     }
 });
 
@@ -1200,16 +1474,17 @@ app.use((req, res) => {
         suggestions.push('Check /health for available endpoints');
     }
     
-    res.status(404).json({ 
-        success: false,
-        error: {
-            message: 'Endpoint not found',
-            code: 'ENDPOINT_NOT_FOUND',
+    res.error(
+        'Endpoint not found',
+        API_ERROR_CODES.ENDPOINT_NOT_FOUND,
+        HTTP_STATUS_CODES.NOT_FOUND,
+        {
             path: req.path,
             method: req.method,
-            suggestions
+            suggestions,
+            available_endpoints: '/health'
         }
-    });
+    );
 });
 
 // Enhanced global error handler
@@ -1224,18 +1499,32 @@ app.use((err, req, res, next) => {
         timestamp: new Date().toISOString()
     });
     
-    // Don't send stack traces in production
-    const isDevelopment = process.env.NODE_ENV !== 'production';
+    // Determine error code and status
+    const errorCode = err.code || API_ERROR_CODES.INTERNAL_ERROR;
+    const statusCode = err.status || HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR;
+    const errorMessage = err.message || 'Internal server error';
     
-    res.status(err.status || 500).json({ 
-        success: false,
-        error: {
-            message: err.message || 'Internal server error',
-            code: err.code || 'INTERNAL_ERROR',
-            ...(isDevelopment && { stack: err.stack }),
-            timestamp: new Date().toISOString()
-        }
-    });
+    // Create error details
+    const errorDetails = {
+        path: req.path,
+        method: req.method,
+        timestamp: new Date().toISOString(),
+        request_id: req.headers['x-request-id'] || null
+    };
+    
+    // Add stack trace only in development
+    if (process.env.NODE_ENV !== 'production') {
+        errorDetails.stack = err.stack;
+        errorDetails.body = req.body;
+        errorDetails.query = req.query;
+    }
+    
+    res.error(
+        errorMessage,
+        errorCode,
+        statusCode,
+        errorDetails
+    );
 });
 
 // Graceful shutdown
@@ -1255,7 +1544,7 @@ process.on('SIGTERM', () => {
 app.listen(port, () => {
     console.log(`
     =========================================
-    🚀 ENHANCED INVESTOR NETWORK API SERVER
+    🚀 STANDARDIZED INVESTOR NETWORK API v2.1
     =========================================
     
     API Server: http://localhost:${port}
@@ -1266,7 +1555,7 @@ app.listen(port, () => {
     Start with: cd frontend && npm run dev
     Access at: http://localhost:3013
     
-    📊 CORE ENDPOINTS:
+    📊 CORE ENDPOINTS (All with standardized responses):
     
     Network Analysis:
     • GET  /api/network/stats - Network statistics
@@ -1287,28 +1576,20 @@ app.listen(port, () => {
     AI-Powered Search:
     • GET  /api/search/ai?q=... - Natural language search
     
-    Network Intelligence:
-    • GET  /api/investors/:id/warm-intros - Warm intro paths
-    • GET  /api/investors/:id/co-investment-opps - Co-investment analysis
-    • POST /api/reports/recommendations - Custom reports
-    
-    Business Intelligence:
-    • GET  /api/bi/pipeline - Investment pipeline analysis
-    • GET  /api/bi/market-intelligence - Market insights
-    
-    🌟 NEW FEATURES:
-    ✅ Enhanced CORS for frontend integration
-    ✅ Comprehensive error handling with codes
-    ✅ Pagination support for all list endpoints
-    ✅ AI-powered natural language search
-    ✅ Network graph data for visualization
-    ✅ Full investor profiles with analytics
-    ✅ Investment firm management
+    🌟 NEW v2.1 FEATURES:
+    ✅ Standardized API response format {success, data, error, meta}
+    ✅ Comprehensive input validation and sanitization
+    ✅ Enhanced error handling with detailed error codes
+    ✅ Rate limiting protection (60 req/min general, 20 req/min AI)
+    ✅ Performance monitoring and execution timing
+    ✅ TypeScript interfaces for frontend integration
+    ✅ Consistent pagination and search responses
+    ✅ Detailed error messages with suggestions
     
     =========================================
     Database: investor_network_full.db
     Records: ${analyzer.getFullDatasetStatistics().totalInvestors.toLocaleString()} investors
-    Ready for frontend at http://localhost:3000
+    Response Format: Standardized v2.1
     =========================================
     `);
 });

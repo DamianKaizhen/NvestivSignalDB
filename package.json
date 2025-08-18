@@ -11,6 +11,7 @@
     "install-deps": "npm install && cd frontend && npm install"
   },
   "dependencies": {
+    "@radix-ui/react-collapsible": "^1.1.12",
     "better-sqlite3": "^9.0.0",
     "cors": "^2.8.5",
     "duckdb": "^1.0.0",

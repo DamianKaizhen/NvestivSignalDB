@@ -1,0 +1,1429 @@
+<testsuites id="" name="" tests="40" failures="33" skipped="0" errors="0" time="63.118804">
+<testsuite name="dashboard.spec.ts" timestamp="2025-08-18T03:24:40.729Z" hostname="chromium" tests="8" failures="6" skipped="0" time="153.208" errors="0">
+<testcase name="Dashboard › loads the main dashboard" classname="dashboard.spec.ts" time="10.956">
+<failure message="dashboard.spec.ts:9:7 loads the main dashboard" type="FAILURE">
+<![CDATA[  [chromium] › dashboard.spec.ts:9:7 › Dashboard › loads the main dashboard ────────────────────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: getByText('Nvestiv') resolved to 2 elements:
+        1) <span class="text-xl font-bold">Nvestiv</span> aka getByText('Nvestiv').first()
+        2) <span class="text-xl font-bold">Nvestiv</span> aka getByRole('link', { name: 'Nvestiv' })
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Nvestiv')
+
+
+      12 |     
+      13 |     // Check for dashboard content
+    > 14 |     await expect(page.getByText('Nvestiv')).toBeVisible()
+         |                                             ^
+      15 |     
+      16 |     // Check for search functionality
+      17 |     await expect(page.getByPlaceholder(/search/i)).toBeVisible()
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:14:45
+
+    Error Context: ../test-results/dashboard-Dashboard-loads-the-main-dashboard-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-loads-the-main-dashboard-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › displays network statistics" classname="dashboard.spec.ts" time="20.693">
+<failure message="dashboard.spec.ts:20:7 displays network statistics" type="FAILURE">
+<![CDATA[  [chromium] › dashboard.spec.ts:20:7 › Dashboard › displays network statistics ────────────────────
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeVisible()
+
+    Locator: getByText(/investor/i)
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText(/investor/i)
+
+
+      20 |   test('displays network statistics', async ({ page }) => {
+      21 |     // Check for stats cards or sections
+    > 22 |     await expect(page.getByText(/investor/i)).toBeVisible()
+         |                                               ^
+      23 |     await expect(page.getByText(/firm/i)).toBeVisible()
+      24 |     
+      25 |     // Check for any visible numbers/statistics
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:22:47
+
+    Error Context: ../test-results/dashboard-Dashboard-displays-network-statistics-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-displays-network-statistics-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › navigation works correctly" classname="dashboard.spec.ts" time="30.817">
+<failure message="dashboard.spec.ts:29:7 navigation works correctly" type="FAILURE">
+<![CDATA[  [chromium] › dashboard.spec.ts:29:7 › Dashboard › navigation works correctly ─────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('link', { name: /firms/i })
+        - locator resolved to <a href="/firms" class="flex items-center space-x-3 rounded-lg px-3 py-3 text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-muted-foreground">…</a>
+      - attempting click action
+        - waiting for element to be visible, enabled and stable
+      - element was detached from the DOM, retrying
+
+
+      41 |     const firmsLink = page.getByRole('link', { name: /firms/i })
+      42 |     if (await firmsLink.isVisible()) {
+    > 43 |       await firmsLink.click()
+         |                       ^
+      44 |       await expect(page).toHaveURL(/firms/)
+      45 |     }
+      46 |   })
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:43:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/dashboard-Dashboard-navigation-works-correctly-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/dashboard-Dashboard-navigation-works-correctly-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/dashboard-Dashboard-navigation-works-correctly-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-navigation-works-correctly-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-Dashboard-navigation-works-correctly-chromium/video.webm]]
+
+[[ATTACHMENT|dashboard-Dashboard-navigation-works-correctly-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › search functionality is accessible" classname="dashboard.spec.ts" time="15.994">
+<failure message="dashboard.spec.ts:48:7 search functionality is accessible" type="FAILURE">
+<![CDATA[  [chromium] › dashboard.spec.ts:48:7 › Dashboard › search functionality is accessible ─────────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: getByPlaceholder(/search/i) resolved to 2 elements:
+        1) <input readonly value="" placeholder="Search investors, firms, or describe your needs..." class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10 pr-20 cursor-pointer"/> aka getByRole('textbox', { name: 'Search investors, firms, or' })
+        2) <input readonly value="" placeholder="Search..." class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10 pr-20 cursor-pointer"/> aka getByPlaceholder('Search...')
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByPlaceholder(/search/i)
+
+
+      49 |     // Test global search
+      50 |     const searchInput = page.getByPlaceholder(/search/i)
+    > 51 |     await expect(searchInput).toBeVisible()
+         |                               ^
+      52 |     
+      53 |     // Test that search input accepts text
+      54 |     await searchInput.fill('test search')
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:51:31
+
+    Error Context: ../test-results/dashboard-Dashboard-search-functionality-is-accessible-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-search-functionality-is-accessible-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › responsive design works" classname="dashboard.spec.ts" time="17.352">
+<failure message="dashboard.spec.ts:62:7 responsive design works" type="FAILURE">
+<![CDATA[  [chromium] › dashboard.spec.ts:62:7 › Dashboard › responsive design works ────────────────────────
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeVisible()
+
+    Locator: getByText('Nvestiv')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Nvestiv')
+
+
+      63 |     // Test desktop view
+      64 |     await page.setViewportSize({ width: 1200, height: 800 })
+    > 65 |     await expect(page.getByText('Nvestiv')).toBeVisible()
+         |                                             ^
+      66 |     
+      67 |     // Test tablet view
+      68 |     await page.setViewportSize({ width: 768, height: 1024 })
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:65:45
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › theme toggle works if available" classname="dashboard.spec.ts" time="9.971">
+</testcase>
+<testcase name="Dashboard › handles loading states" classname="dashboard.spec.ts" time="22.295">
+</testcase>
+<testcase name="Dashboard › error handling works" classname="dashboard.spec.ts" time="25.13">
+<failure message="dashboard.spec.ts:114:7 error handling works" type="FAILURE">
+<![CDATA[  [chromium] › dashboard.spec.ts:114:7 › Dashboard › error handling works ──────────────────────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: getByText(/404|not found|page not found/i) resolved to 2 elements:
+        1) <div class="text-6xl font-bold text-muted-foreground mb-4">404</div> aka getByText('404')
+        2) <h3 class="font-semibold tracking-tight text-2xl">Page Not Found</h3> aka getByRole('heading', { name: 'Page Not Found' })
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText(/404|not found|page not found/i)
+
+
+      117 |     
+      118 |     // Should show 404 page or error message
+    > 119 |     await expect(page.getByText(/404|not found|page not found/i)).toBeVisible()
+          |                                                                   ^
+      120 |   })
+      121 | })
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:119:67
+
+    Error Context: ../test-results/dashboard-Dashboard-error-handling-works-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-error-handling-works-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="dashboard.spec.ts" timestamp="2025-08-18T03:24:40.729Z" hostname="firefox" tests="8" failures="6" skipped="0" time="70.635" errors="0">
+<testcase name="Dashboard › loads the main dashboard" classname="dashboard.spec.ts" time="4.477">
+<failure message="dashboard.spec.ts:9:7 loads the main dashboard" type="FAILURE">
+<![CDATA[  [firefox] › dashboard.spec.ts:9:7 › Dashboard › loads the main dashboard ─────────────────────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: getByText('Nvestiv') resolved to 2 elements:
+        1) <span class="text-xl font-bold">Nvestiv</span> aka getByText('Nvestiv').first()
+        2) <span class="text-xl font-bold">Nvestiv</span> aka getByRole('link', { name: 'Nvestiv' })
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Nvestiv')
+
+
+      12 |     
+      13 |     // Check for dashboard content
+    > 14 |     await expect(page.getByText('Nvestiv')).toBeVisible()
+         |                                             ^
+      15 |     
+      16 |     // Check for search functionality
+      17 |     await expect(page.getByPlaceholder(/search/i)).toBeVisible()
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:14:45
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/dashboard-Dashboard-loads-the-main-dashboard-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-loads-the-main-dashboard-firefox/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › displays network statistics" classname="dashboard.spec.ts" time="4.296">
+<failure message="dashboard.spec.ts:20:7 displays network statistics" type="FAILURE">
+<![CDATA[  [firefox] › dashboard.spec.ts:20:7 › Dashboard › displays network statistics ─────────────────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: getByText(/investor/i) resolved to 10 elements:
+        1) <div class="font-medium">Investors</div> aka getByText('Investors', { exact: true }).first()
+        2) <div class="text-xs text-muted-foreground">Browse investor profiles</div> aka getByText('Browse investor profiles').first()
+        3) <div class="font-medium">Investors</div> aka getByRole('link', { name: 'Investors Browse investor' })
+        4) <div class="text-xs text-muted-foreground">Browse investor profiles</div> aka getByRole('link', { name: 'Investors Browse investor' })
+        5) <span>32,780 investors • Real-time data</span> aka getByText('investors • Real-time data')
+        6) <h2 id="radix-:Rkp7mj6H1:" data-slot="dialog-title" class="text-lg leading-none font-semibold">Search Investors</h2> aka getByRole('heading', { name: 'Search Investors' })
+        7) <p id="radix-:Rkp7mj6H2:" data-slot="dialog-description" class="text-muted-foreground text-sm">Search for investors, firms, or use AI-powered ma…</p> aka getByRole('paragraph').filter({ hasText: 'Search for investors, firms,' })
+        8) <h2 id="radix-:R2mp7mj6H1:" data-slot="dialog-title" class="text-lg leading-none font-semibold">Search Investors</h2> aka getByText('Search Investors').nth(1)
+        9) <p id="radix-:R2mp7mj6H2:" data-slot="dialog-description" class="text-muted-foreground text-sm">Search for investors, firms, or use AI-powered ma…</p> aka getByText('Search for investors, firms,').nth(1)
+        10) <p class="text-muted-foreground">Overview of the investor network with key statist…</p> aka getByText('Overview of the investor')
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText(/investor/i)
+
+
+      20 |   test('displays network statistics', async ({ page }) => {
+      21 |     // Check for stats cards or sections
+    > 22 |     await expect(page.getByText(/investor/i)).toBeVisible()
+         |                                               ^
+      23 |     await expect(page.getByText(/firm/i)).toBeVisible()
+      24 |     
+      25 |     // Check for any visible numbers/statistics
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:22:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/dashboard-Dashboard-displays-network-statistics-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-displays-network-statistics-firefox/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › navigation works correctly" classname="dashboard.spec.ts" time="30.094">
+<failure message="dashboard.spec.ts:29:7 navigation works correctly" type="FAILURE">
+<![CDATA[  [firefox] › dashboard.spec.ts:29:7 › Dashboard › navigation works correctly ──────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('link', { name: /firms/i })
+        - locator resolved to <a href="/firms" class="flex items-center space-x-3 rounded-lg px-3 py-3 text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-muted-foreground">…</a>
+      - attempting click action
+        - waiting for element to be visible, enabled and stable
+      - element was detached from the DOM, retrying
+
+
+      41 |     const firmsLink = page.getByRole('link', { name: /firms/i })
+      42 |     if (await firmsLink.isVisible()) {
+    > 43 |       await firmsLink.click()
+         |                       ^
+      44 |       await expect(page).toHaveURL(/firms/)
+      45 |     }
+      46 |   })
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:43:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/dashboard-Dashboard-navigation-works-correctly-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/dashboard-Dashboard-navigation-works-correctly-firefox/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-navigation-works-correctly-firefox/test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-Dashboard-navigation-works-correctly-firefox/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › search functionality is accessible" classname="dashboard.spec.ts" time="5.028">
+<failure message="dashboard.spec.ts:48:7 search functionality is accessible" type="FAILURE">
+<![CDATA[  [firefox] › dashboard.spec.ts:48:7 › Dashboard › search functionality is accessible ──────────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: getByPlaceholder(/search/i) resolved to 2 elements:
+        1) <input readonly value="" placeholder="Search investors, firms, or describe your needs..." class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10 pr-20 cursor-pointer"/> aka getByRole('textbox', { name: 'Search investors, firms, or' })
+        2) <input readonly value="" placeholder="Search..." class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10 pr-20 cursor-pointer"/> aka getByPlaceholder('Search...')
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByPlaceholder(/search/i)
+
+
+      49 |     // Test global search
+      50 |     const searchInput = page.getByPlaceholder(/search/i)
+    > 51 |     await expect(searchInput).toBeVisible()
+         |                               ^
+      52 |     
+      53 |     // Test that search input accepts text
+      54 |     await searchInput.fill('test search')
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:51:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/dashboard-Dashboard-search-functionality-is-accessible-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-search-functionality-is-accessible-firefox/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › responsive design works" classname="dashboard.spec.ts" time="8.753">
+<failure message="dashboard.spec.ts:62:7 responsive design works" type="FAILURE">
+<![CDATA[  [firefox] › dashboard.spec.ts:62:7 › Dashboard › responsive design works ─────────────────────────
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeVisible()
+
+    Locator: getByText('Nvestiv')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Nvestiv')
+
+
+      63 |     // Test desktop view
+      64 |     await page.setViewportSize({ width: 1200, height: 800 })
+    > 65 |     await expect(page.getByText('Nvestiv')).toBeVisible()
+         |                                             ^
+      66 |     
+      67 |     // Test tablet view
+      68 |     await page.setViewportSize({ width: 768, height: 1024 })
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:65:45
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/dashboard-Dashboard-responsive-design-works-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/dashboard-Dashboard-responsive-design-works-firefox/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-responsive-design-works-firefox/test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-Dashboard-responsive-design-works-firefox/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › theme toggle works if available" classname="dashboard.spec.ts" time="4.579">
+</testcase>
+<testcase name="Dashboard › handles loading states" classname="dashboard.spec.ts" time="7.664">
+</testcase>
+<testcase name="Dashboard › error handling works" classname="dashboard.spec.ts" time="5.744">
+<failure message="dashboard.spec.ts:114:7 error handling works" type="FAILURE">
+<![CDATA[  [firefox] › dashboard.spec.ts:114:7 › Dashboard › error handling works ───────────────────────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: getByText(/404|not found|page not found/i) resolved to 2 elements:
+        1) <div class="text-6xl font-bold text-muted-foreground mb-4">404</div> aka getByText('404')
+        2) <h3 class="font-semibold tracking-tight text-2xl">Page Not Found</h3> aka getByRole('heading', { name: 'Page Not Found' })
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText(/404|not found|page not found/i)
+
+
+      117 |     
+      118 |     // Should show 404 page or error message
+    > 119 |     await expect(page.getByText(/404|not found|page not found/i)).toBeVisible()
+          |                                                                   ^
+      120 |   })
+      121 | })
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:119:67
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/dashboard-Dashboard-error-handling-works-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-error-handling-works-firefox/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="dashboard.spec.ts" timestamp="2025-08-18T03:24:40.729Z" hostname="webkit" tests="8" failures="8" skipped="0" time="0.06" errors="0">
+<testcase name="Dashboard › loads the main dashboard" classname="dashboard.spec.ts" time="0.011">
+<failure message="dashboard.spec.ts:9:7 loads the main dashboard" type="FAILURE">
+<![CDATA[  [webkit] › dashboard.spec.ts:9:7 › Dashboard › loads the main dashboard ──────────────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › displays network statistics" classname="dashboard.spec.ts" time="0.009">
+<failure message="dashboard.spec.ts:20:7 displays network statistics" type="FAILURE">
+<![CDATA[  [webkit] › dashboard.spec.ts:20:7 › Dashboard › displays network statistics ──────────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › navigation works correctly" classname="dashboard.spec.ts" time="0.007">
+<failure message="dashboard.spec.ts:29:7 navigation works correctly" type="FAILURE">
+<![CDATA[  [webkit] › dashboard.spec.ts:29:7 › Dashboard › navigation works correctly ───────────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › search functionality is accessible" classname="dashboard.spec.ts" time="0.009">
+<failure message="dashboard.spec.ts:48:7 search functionality is accessible" type="FAILURE">
+<![CDATA[  [webkit] › dashboard.spec.ts:48:7 › Dashboard › search functionality is accessible ───────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › responsive design works" classname="dashboard.spec.ts" time="0.007">
+<failure message="dashboard.spec.ts:62:7 responsive design works" type="FAILURE">
+<![CDATA[  [webkit] › dashboard.spec.ts:62:7 › Dashboard › responsive design works ──────────────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › theme toggle works if available" classname="dashboard.spec.ts" time="0.007">
+<failure message="dashboard.spec.ts:76:7 theme toggle works if available" type="FAILURE">
+<![CDATA[  [webkit] › dashboard.spec.ts:76:7 › Dashboard › theme toggle works if available ──────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › handles loading states" classname="dashboard.spec.ts" time="0.006">
+<failure message="dashboard.spec.ts:101:7 handles loading states" type="FAILURE">
+<![CDATA[  [webkit] › dashboard.spec.ts:101:7 › Dashboard › handles loading states ──────────────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › error handling works" classname="dashboard.spec.ts" time="0.004">
+<failure message="dashboard.spec.ts:114:7 error handling works" type="FAILURE">
+<![CDATA[  [webkit] › dashboard.spec.ts:114:7 › Dashboard › error handling works ────────────────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+</testsuite>
+<testsuite name="dashboard.spec.ts" timestamp="2025-08-18T03:24:40.729Z" hostname="Mobile Chrome" tests="8" failures="5" skipped="0" time="106.198" errors="0">
+<testcase name="Dashboard › loads the main dashboard" classname="dashboard.spec.ts" time="14.718">
+<failure message="dashboard.spec.ts:9:7 loads the main dashboard" type="FAILURE">
+<![CDATA[  [Mobile Chrome] › dashboard.spec.ts:9:7 › Dashboard › loads the main dashboard ───────────────────
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeVisible()
+
+    Locator: getByText('Nvestiv')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Nvestiv')
+
+
+      12 |     
+      13 |     // Check for dashboard content
+    > 14 |     await expect(page.getByText('Nvestiv')).toBeVisible()
+         |                                             ^
+      15 |     
+      16 |     // Check for search functionality
+      17 |     await expect(page.getByPlaceholder(/search/i)).toBeVisible()
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:14:45
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/dashboard-Dashboard-loads-the-main-dashboard-Mobile-Chrome/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/dashboard-Dashboard-loads-the-main-dashboard-Mobile-Chrome/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/dashboard-Dashboard-loads-the-main-dashboard-Mobile-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-loads-the-main-dashboard-Mobile-Chrome/test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-Dashboard-loads-the-main-dashboard-Mobile-Chrome/video.webm]]
+
+[[ATTACHMENT|dashboard-Dashboard-loads-the-main-dashboard-Mobile-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › displays network statistics" classname="dashboard.spec.ts" time="9.039">
+<failure message="dashboard.spec.ts:20:7 displays network statistics" type="FAILURE">
+<![CDATA[  [Mobile Chrome] › dashboard.spec.ts:20:7 › Dashboard › displays network statistics ───────────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: getByText(/investor/i) resolved to 10 elements:
+        1) <div class="font-medium">Investors</div> aka getByText('Investors', { exact: true }).first()
+        2) <div class="text-xs text-muted-foreground">Browse investor profiles</div> aka getByText('Browse investor profiles').first()
+        3) <div class="font-medium">Investors</div> aka getByText('Investors', { exact: true }).nth(1)
+        4) <div class="text-xs text-muted-foreground">Browse investor profiles</div> aka getByText('Browse investor profiles').nth(1)
+        5) <span>32,780 investors • Real-time data</span> aka getByText('investors • Real-time data')
+        6) <h2 id="radix-:Rkp7mj6H1:" data-slot="dialog-title" class="text-lg leading-none font-semibold">Search Investors</h2> aka locator('div').filter({ hasText: /^⌘KSearch InvestorsSearch for investors, firms, or use AI-powered matching$/ }).locator('h2')
+        7) <p id="radix-:Rkp7mj6H2:" data-slot="dialog-description" class="text-muted-foreground text-sm">Search for investors, firms, or use AI-powered ma…</p> aka locator('div').filter({ hasText: /^⌘KSearch InvestorsSearch for investors, firms, or use AI-powered matching$/ }).locator('p')
+        8) <h2 id="radix-:R2mp7mj6H1:" data-slot="dialog-title" class="text-lg leading-none font-semibold">Search Investors</h2> aka getByRole('heading', { name: 'Search Investors' })
+        9) <p id="radix-:R2mp7mj6H2:" data-slot="dialog-description" class="text-muted-foreground text-sm">Search for investors, firms, or use AI-powered ma…</p> aka getByRole('paragraph').filter({ hasText: 'Search for investors, firms,' })
+        10) <p class="text-muted-foreground">Overview of the investor network with key statist…</p> aka getByText('Overview of the investor')
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText(/investor/i)
+
+
+      20 |   test('displays network statistics', async ({ page }) => {
+      21 |     // Check for stats cards or sections
+    > 22 |     await expect(page.getByText(/investor/i)).toBeVisible()
+         |                                               ^
+      23 |     await expect(page.getByText(/firm/i)).toBeVisible()
+      24 |     
+      25 |     // Check for any visible numbers/statistics
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:22:47
+
+    Error Context: ../test-results/dashboard-Dashboard-displays-network-statistics-Mobile-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-displays-network-statistics-Mobile-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › navigation works correctly" classname="dashboard.spec.ts" time="10.163">
+</testcase>
+<testcase name="Dashboard › search functionality is accessible" classname="dashboard.spec.ts" time="13.758">
+<failure message="dashboard.spec.ts:48:7 search functionality is accessible" type="FAILURE">
+<![CDATA[  [Mobile Chrome] › dashboard.spec.ts:48:7 › Dashboard › search functionality is accessible ────────
+
+    Error: expect.toBeVisible: Error: strict mode violation: getByPlaceholder(/search/i) resolved to 2 elements:
+        1) <input readonly value="" placeholder="Search investors, firms, or describe your needs..." class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10 pr-20 cursor-pointer"/> aka getByPlaceholder('Search investors, firms, or')
+        2) <input readonly value="" placeholder="Search..." class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10 pr-20 cursor-pointer"/> aka getByRole('textbox', { name: 'Search...' })
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByPlaceholder(/search/i)
+
+
+      49 |     // Test global search
+      50 |     const searchInput = page.getByPlaceholder(/search/i)
+    > 51 |     await expect(searchInput).toBeVisible()
+         |                               ^
+      52 |     
+      53 |     // Test that search input accepts text
+      54 |     await searchInput.fill('test search')
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:51:31
+
+    Error Context: ../test-results/dashboard-Dashboard-search-functionality-is-accessible-Mobile-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-search-functionality-is-accessible-Mobile-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › responsive design works" classname="dashboard.spec.ts" time="14.629">
+<failure message="dashboard.spec.ts:62:7 responsive design works" type="FAILURE">
+<![CDATA[  [Mobile Chrome] › dashboard.spec.ts:62:7 › Dashboard › responsive design works ───────────────────
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeVisible()
+
+    Locator: getByText('Nvestiv')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Nvestiv')
+
+
+      63 |     // Test desktop view
+      64 |     await page.setViewportSize({ width: 1200, height: 800 })
+    > 65 |     await expect(page.getByText('Nvestiv')).toBeVisible()
+         |                                             ^
+      66 |     
+      67 |     // Test tablet view
+      68 |     await page.setViewportSize({ width: 768, height: 1024 })
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:65:45
+
+    Error Context: ../test-results/dashboard-Dashboard-responsive-design-works-Mobile-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-responsive-design-works-Mobile-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard › theme toggle works if available" classname="dashboard.spec.ts" time="16.002">
+</testcase>
+<testcase name="Dashboard › handles loading states" classname="dashboard.spec.ts" time="16.097">
+</testcase>
+<testcase name="Dashboard › error handling works" classname="dashboard.spec.ts" time="11.792">
+<failure message="dashboard.spec.ts:114:7 error handling works" type="FAILURE">
+<![CDATA[  [Mobile Chrome] › dashboard.spec.ts:114:7 › Dashboard › error handling works ─────────────────────
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeVisible()
+
+    Locator: getByText(/404|not found|page not found/i)
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText(/404|not found|page not found/i)
+
+
+      117 |     
+      118 |     // Should show 404 page or error message
+    > 119 |     await expect(page.getByText(/404|not found|page not found/i)).toBeVisible()
+          |                                                                   ^
+      120 |   })
+      121 | })
+        at /home/damian/ExperimentationKaizhen/Nvestiv/frontend/e2e/dashboard.spec.ts:119:67
+
+    Error Context: ../test-results/dashboard-Dashboard-error-handling-works-Mobile-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-Dashboard-error-handling-works-Mobile-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="dashboard.spec.ts" timestamp="2025-08-18T03:24:40.729Z" hostname="Mobile Safari" tests="8" failures="8" skipped="0" time="0.04" errors="0">
+<testcase name="Dashboard › loads the main dashboard" classname="dashboard.spec.ts" time="0.004">
+<failure message="dashboard.spec.ts:9:7 loads the main dashboard" type="FAILURE">
+<![CDATA[  [Mobile Safari] › dashboard.spec.ts:9:7 › Dashboard › loads the main dashboard ───────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › displays network statistics" classname="dashboard.spec.ts" time="0.006">
+<failure message="dashboard.spec.ts:20:7 displays network statistics" type="FAILURE">
+<![CDATA[  [Mobile Safari] › dashboard.spec.ts:20:7 › Dashboard › displays network statistics ───────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › navigation works correctly" classname="dashboard.spec.ts" time="0.006">
+<failure message="dashboard.spec.ts:29:7 navigation works correctly" type="FAILURE">
+<![CDATA[  [Mobile Safari] › dashboard.spec.ts:29:7 › Dashboard › navigation works correctly ────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › search functionality is accessible" classname="dashboard.spec.ts" time="0.005">
+<failure message="dashboard.spec.ts:48:7 search functionality is accessible" type="FAILURE">
+<![CDATA[  [Mobile Safari] › dashboard.spec.ts:48:7 › Dashboard › search functionality is accessible ────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › responsive design works" classname="dashboard.spec.ts" time="0.004">
+<failure message="dashboard.spec.ts:62:7 responsive design works" type="FAILURE">
+<![CDATA[  [Mobile Safari] › dashboard.spec.ts:62:7 › Dashboard › responsive design works ───────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › theme toggle works if available" classname="dashboard.spec.ts" time="0.005">
+<failure message="dashboard.spec.ts:76:7 theme toggle works if available" type="FAILURE">
+<![CDATA[  [Mobile Safari] › dashboard.spec.ts:76:7 › Dashboard › theme toggle works if available ───────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › handles loading states" classname="dashboard.spec.ts" time="0.004">
+<failure message="dashboard.spec.ts:101:7 handles loading states" type="FAILURE">
+<![CDATA[  [Mobile Safari] › dashboard.spec.ts:101:7 › Dashboard › handles loading states ───────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › error handling works" classname="dashboard.spec.ts" time="0.006">
+<failure message="dashboard.spec.ts:114:7 error handling works" type="FAILURE">
+<![CDATA[  [Mobile Safari] › dashboard.spec.ts:114:7 › Dashboard › error handling works ─────────────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libgtk-4.so.1                                    ║
+    ║     libgraphene-1.0.so.0                             ║
+    ║     libatomic.so.1                                   ║
+    ║     libxslt.so.1                                     ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libvpx.so.9                                      ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libgstallocators-1.0.so.0                        ║
+    ║     libgstapp-1.0.so.0                               ║
+    ║     libgstpbutils-1.0.so.0                           ║
+    ║     libgstaudio-1.0.so.0                             ║
+    ║     libgsttag-1.0.so.0                               ║
+    ║     libgstvideo-1.0.so.0                             ║
+    ║     libgstgl-1.0.so.0                                ║
+    ║     libgstcodecparsers-1.0.so.0                      ║
+    ║     libgstfft-1.0.so.0                               ║
+    ║     libflite.so.1                                    ║
+    ║     libflite_usenglish.so.1                          ║
+    ║     libflite_cmu_grapheme_lang.so.1                  ║
+    ║     libflite_cmu_grapheme_lex.so.1                   ║
+    ║     libflite_cmu_indic_lang.so.1                     ║
+    ║     libflite_cmu_indic_lex.so.1                      ║
+    ║     libflite_cmulex.so.1                             ║
+    ║     libflite_cmu_time_awb.so.1                       ║
+    ║     libflite_cmu_us_awb.so.1                         ║
+    ║     libflite_cmu_us_kal16.so.1                       ║
+    ║     libflite_cmu_us_kal.so.1                         ║
+    ║     libflite_cmu_us_rms.so.1                         ║
+    ║     libflite_cmu_us_slt.so.1                         ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libavif.so.16                                    ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libenchant-2.so.2                                ║
+    ║     libsecret-1.so.0                                 ║
+    ║     libhyphen.so.0                                   ║
+    ║     libmanette-0.2.so.0                              ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+</testsuite>
+</testsuites>

@@ -12,6 +12,7 @@ export function DashboardSimple() {
     queryFn: () => apiClient.getNetworkStats(),
   })
 
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -187,32 +188,38 @@ export function DashboardSimple() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-1">
-                {formatNumber(stats.investmentFocus.founder_focused)}
+          {stats.investmentFocus ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-1">
+                  {formatNumber(stats.investmentFocus.founder_focused || 0)}
+                </div>
+                <div className="text-sm text-muted-foreground">Founder Focused</div>
               </div>
-              <div className="text-sm text-muted-foreground">Founder Focused</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-1">
-                {formatNumber(stats.investmentFocus.diversity_focused)}
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-1">
+                  {formatNumber(stats.investmentFocus.diversity_focused || 0)}
+                </div>
+                <div className="text-sm text-muted-foreground">Diversity Focused</div>
               </div>
-              <div className="text-sm text-muted-foreground">Diversity Focused</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-1">
-                {formatNumber(stats.investmentFocus.female_focused)}
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-1">
+                  {formatNumber(stats.investmentFocus.female_focused || 0)}
+                </div>
+                <div className="text-sm text-muted-foreground">Female Focused</div>
               </div>
-              <div className="text-sm text-muted-foreground">Female Focused</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-1">
-                {formatNumber(stats.investmentFocus.lead_investors)}
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-1">
+                  {formatNumber(stats.investmentFocus.lead_investors || 0)}
+                </div>
+                <div className="text-sm text-muted-foreground">Lead Investors</div>
               </div>
-              <div className="text-sm text-muted-foreground">Lead Investors</div>
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              No investment focus data available
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

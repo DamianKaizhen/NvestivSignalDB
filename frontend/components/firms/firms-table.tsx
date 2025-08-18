@@ -1,24 +1,26 @@
 'use client'
 
-import { Building, Users, MapPin, Target, TrendingUp } from 'lucide-react'
+import Link from 'next/link'
+import { Building, Users, MapPin, Target, TrendingUp, ExternalLink, ChevronRight, Star } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { formatCurrency, formatNumber } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
+import type { Firm } from '@/lib/api'
 
-interface Firm {
-  name: string
-  investorCount: number
-  totalInvestments: number
-  avgCheckSize: number
-  locations: string[]
-  sectors: string[]
-  stages: string[]
-  investors: any[]
+interface PaginationInfo {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+  hasMore: boolean
 }
 
 interface FirmsTableProps {
   firms: Firm[]
   isLoading: boolean
+  pagination?: PaginationInfo
+  onPageChange?: (page: number) => void
 }
 
 function FirmsTableSkeleton() {
@@ -55,75 +57,165 @@ function FirmsTableSkeleton() {
 
 function FirmRow({ firm }: { firm: Firm }) {
   const firmInitial = firm.name.charAt(0).toUpperCase()
+  const qualityScore = firm.avg_quality_score || 0
+  const qualityLevel = qualityScore >= 80 ? 'high' : qualityScore >= 60 ? 'medium' : 'low'
+  const qualityColor = qualityLevel === 'high' ? 'text-green-600' : qualityLevel === 'medium' ? 'text-yellow-600' : 'text-red-600'
 
   return (
-    <div className="flex items-center justify-between p-4 border-b hover:bg-muted/50 transition-colors">
-      <div className="flex items-center space-x-4 min-w-0 flex-1">
-        {/* Logo/Initial */}
-        <div className="h-10 w-10 bg-primary text-primary-foreground rounded flex items-center justify-center font-medium">
-          {firmInitial}
-        </div>
-
-        {/* Main Info */}
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center space-x-2">
-            <h3 className="font-medium truncate">{firm.name}</h3>
-          </div>
-
-          <div className="flex items-center space-x-4 mt-1 text-sm text-muted-foreground">
-            <div className="flex items-center space-x-1">
-              <Users className="h-3 w-3" />
-              <span>{formatNumber(firm.investorCount)} investors</span>
+    <Link 
+      href={`/firms/${firm.id || firm.name.toLowerCase().replace(/\s+/g, '-')}`}
+      className="block transition-all duration-200 hover:bg-muted/50 group"
+    >
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center space-x-4 min-w-0 flex-1">
+          {/* Logo/Initial */}
+          <div className="relative">
+            <div className="h-12 w-12 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-lg flex items-center justify-center font-bold text-lg shadow-sm">
+              {firmInitial}
             </div>
-            {firm.locations.length > 0 && (
-              <div className="flex items-center space-x-1">
-                <MapPin className="h-3 w-3" />
-                <span className="truncate">{firm.locations.slice(0, 2).join(', ')}</span>
-                {firm.locations.length > 2 && <span>+{firm.locations.length - 2}</span>}
+            {qualityScore >= 80 && (
+              <div className="absolute -top-1 -right-1 h-5 w-5 bg-yellow-500 rounded-full flex items-center justify-center">
+                <Star className="h-3 w-3 text-white fill-current" />
               </div>
             )}
           </div>
 
-          {/* Sectors */}
-          {firm.sectors.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {firm.sectors.slice(0, 3).map((sector, idx) => (
-                <Badge key={idx} variant="secondary" className="text-xs">
-                  {sector}
-                </Badge>
-              ))}
-              {firm.sectors.length > 3 && (
-                <Badge variant="outline" className="text-xs">
-                  +{firm.sectors.length - 3} more
-                </Badge>
+          {/* Main Info */}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center space-x-2 mb-1">
+              <h3 className="font-semibold text-lg truncate group-hover:text-primary transition-colors">
+                {firm.name}
+              </h3>
+              <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+            </div>
+
+            <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-2">
+              <div className="flex items-center space-x-1">
+                <Users className="h-3 w-3" />
+                <span>{formatNumber(firm.investor_count || 0)} investors</span>
+              </div>
+              {firm.locations && firm.locations.length > 0 && (
+                <div className="flex items-center space-x-1">
+                  <MapPin className="h-3 w-3" />
+                  <span className="truncate">{firm.locations.slice(0, 2).join(', ')}</span>
+                  {firm.locations.length > 2 && <span>+{firm.locations.length - 2}</span>}
+                </div>
               )}
+              {firm.current_fund_size && (
+                <div className="flex items-center space-x-1">
+                  <Target className="h-3 w-3" />
+                  <span>{firm.current_fund_size}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Sectors */}
+            {firm.sectors && firm.sectors.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {firm.sectors.slice(0, 3).map((sector, idx) => (
+                  <Badge key={idx} variant="secondary" className="text-xs">
+                    {sector}
+                  </Badge>
+                ))}
+                {firm.sectors.length > 3 && (
+                  <Badge variant="outline" className="text-xs">
+                    +{firm.sectors.length - 3} more
+                  </Badge>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="flex items-center space-x-8 text-sm">
+          <div className="text-center">
+            <div className="font-semibold text-lg">{formatNumber(firm.total_investments || 0)}</div>
+            <div className="text-muted-foreground text-xs">Investments</div>
+          </div>
+          {firm.avg_investments && firm.avg_investments > 0 && (
+            <div className="text-center">
+              <div className="font-semibold text-lg">{formatNumber(firm.avg_investments)}</div>
+              <div className="text-muted-foreground text-xs">Avg per Investor</div>
+            </div>
+          )}
+          {qualityScore > 0 && (
+            <div className="text-center">
+              <div className={`font-semibold text-lg ${qualityColor}`}>
+                {qualityScore.toFixed(0)}%
+              </div>
+              <div className="text-muted-foreground text-xs">Quality Score</div>
+            </div>
+          )}
+          {firm.max_connections && firm.max_connections > 0 && (
+            <div className="text-center">
+              <div className="font-semibold text-lg">{formatNumber(firm.max_connections)}</div>
+              <div className="text-muted-foreground text-xs">Max Connections</div>
             </div>
           )}
         </div>
       </div>
+    </Link>
+  )
+}
 
-      {/* Stats */}
-      <div className="flex items-center space-x-6 text-sm">
-        <div className="text-center">
-          <div className="font-medium">{formatNumber(firm.totalInvestments)}</div>
-          <div className="text-muted-foreground">Investments</div>
+function PaginationControls({ pagination, onPageChange }: { 
+  pagination: PaginationInfo
+  onPageChange: (page: number) => void 
+}) {
+  const pages = Array.from({ length: Math.min(pagination.totalPages, 10) }, (_, i) => {
+    const startPage = Math.max(1, pagination.page - 5)
+    return startPage + i
+  }).filter(page => page <= pagination.totalPages)
+
+  return (
+    <div className="flex items-center justify-between px-6 py-4 border-t">
+      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <span>
+          Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
+          {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
+          {pagination.total.toLocaleString()} firms
+        </span>
+      </div>
+      
+      <div className="flex items-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(pagination.page - 1)}
+          disabled={pagination.page <= 1}
+        >
+          Previous
+        </Button>
+        
+        <div className="flex items-center space-x-1">
+          {pages.map((page) => (
+            <Button
+              key={page}
+              variant={page === pagination.page ? "default" : "outline"}
+              size="sm"
+              onClick={() => onPageChange(page)}
+              className="w-10"
+            >
+              {page}
+            </Button>
+          ))}
         </div>
-        {firm.avgCheckSize > 0 && (
-          <div className="text-center">
-            <div className="font-medium">{formatCurrency(firm.avgCheckSize)}</div>
-            <div className="text-muted-foreground">Avg Check</div>
-          </div>
-        )}
-        <div className="text-center">
-          <div className="font-medium">{firm.stages.length}</div>
-          <div className="text-muted-foreground">Stages</div>
-        </div>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(pagination.page + 1)}
+          disabled={!pagination.hasMore}
+        >
+          Next
+        </Button>
       </div>
     </div>
   )
 }
 
-export function FirmsTable({ firms, isLoading }: FirmsTableProps) {
+export function FirmsTable({ firms, isLoading, pagination, onPageChange }: FirmsTableProps) {
   if (isLoading) {
     return <FirmsTableSkeleton />
   }
@@ -141,10 +233,19 @@ export function FirmsTable({ firms, isLoading }: FirmsTableProps) {
   }
 
   return (
-    <div className="divide-y">
-      {firms.map((firm) => (
-        <FirmRow key={firm.name} firm={firm} />
-      ))}
+    <div>
+      <div className="divide-y">
+        {firms.map((firm) => (
+          <FirmRow key={firm.id || firm.name} firm={firm} />
+        ))}
+      </div>
+      
+      {pagination && onPageChange && (
+        <PaginationControls 
+          pagination={pagination} 
+          onPageChange={onPageChange} 
+        />
+      )}
     </div>
   )
 }

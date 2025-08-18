@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { memo, useMemo } from 'react'
 import { ExternalLink, MapPin, Building, User, Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -14,10 +15,12 @@ interface InvestorsTableProps {
   isLoading: boolean
 }
 
-function InvestorTableSkeleton() {
+const InvestorTableSkeleton = memo(function InvestorTableSkeleton() {
+  const skeletonItems = useMemo(() => Array.from({ length: 10 }, (_, i) => i), [])
+  
   return (
     <div className="space-y-4 p-6">
-      {Array.from({ length: 10 }).map((_, i) => (
+      {skeletonItems.map((i) => (
         <div key={i} className="flex items-center space-x-4 py-4 border-b">
           <Skeleton className="h-10 w-10 rounded-full" />
           <div className="flex-1 space-y-2">
@@ -32,18 +35,30 @@ function InvestorTableSkeleton() {
       ))}
     </div>
   )
-}
+})
 
-function InvestorRow({ investor }: { investor: Investor }) {
-  const initials = investor.name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+const InvestorRow = memo(function InvestorRow({ investor }: { investor: Investor }) {
+  const initials = useMemo(() => {
+    return investor.name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }, [investor.name])
+
+  const displayedFocus = useMemo(() => {
+    if (!investor.investment_focus || investor.investment_focus.length === 0) return null
+    return investor.investment_focus.slice(0, 3)
+  }, [investor.investment_focus])
+
+  const remainingFocusCount = useMemo(() => {
+    if (!investor.investment_focus || investor.investment_focus.length <= 3) return 0
+    return investor.investment_focus.length - 3
+  }, [investor.investment_focus])
 
   return (
-    <div className="flex items-center justify-between p-4 border-b hover:bg-muted/50 transition-colors">
+    <div className="flex items-start justify-between p-4 border-b hover:bg-muted/50 transition-colors">
       <div className="flex items-center space-x-4 min-w-0 flex-1">
         {/* Avatar */}
         <Avatar className="h-10 w-10">
@@ -94,17 +109,41 @@ function InvestorRow({ investor }: { investor: Investor }) {
             )}
           </div>
 
+          {/* Bio snippet */}
+          {investor.bio && (
+            <div className="mt-2 text-sm text-muted-foreground line-clamp-2">
+              {investor.bio}
+            </div>
+          )}
+
           {/* Investment Focus */}
-          {investor.investment_focus && investor.investment_focus.length > 0 && (
+          {displayedFocus && (
             <div className="flex flex-wrap gap-1 mt-2">
-              {investor.investment_focus.slice(0, 3).map((focus, idx) => (
+              {displayedFocus.map((focus, idx) => (
                 <Badge key={idx} variant="secondary" className="text-xs">
                   {focus}
                 </Badge>
               ))}
-              {investor.investment_focus.length > 3 && (
+              {remainingFocusCount > 0 && (
                 <Badge variant="outline" className="text-xs">
-                  +{investor.investment_focus.length - 3} more
+                  +{remainingFocusCount} more
+                </Badge>
+              )}
+            </div>
+          )}
+
+          {/* Additional sectors */}
+          {investor.sectors && investor.sectors.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1">
+              <span className="text-xs text-muted-foreground mr-1">Sectors:</span>
+              {investor.sectors.slice(0, 3).map((sector, idx) => (
+                <Badge key={idx} variant="outline" className="text-xs">
+                  {sector}
+                </Badge>
+              ))}
+              {investor.sectors.length > 3 && (
+                <Badge variant="outline" className="text-xs">
+                  +{investor.sectors.length - 3} more
                 </Badge>
               )}
             </div>
@@ -114,6 +153,12 @@ function InvestorRow({ investor }: { investor: Investor }) {
 
       {/* Stats */}
       <div className="flex items-center space-x-6 text-sm">
+        {investor.network_connections && investor.network_connections > 0 && (
+          <div className="text-center">
+            <div className="font-medium">{formatNumber(investor.network_connections)}</div>
+            <div className="text-muted-foreground">Network</div>
+          </div>
+        )}
         {investor.total_investments && (
           <div className="text-center">
             <div className="font-medium">{formatNumber(investor.total_investments)}</div>
@@ -142,9 +187,9 @@ function InvestorRow({ investor }: { investor: Investor }) {
       </div>
     </div>
   )
-}
+})
 
-export function InvestorsTable({ investors, isLoading }: InvestorsTableProps) {
+export const InvestorsTable = memo(function InvestorsTable({ investors, isLoading }: InvestorsTableProps) {
   if (isLoading) {
     return <InvestorTableSkeleton />
   }
@@ -168,4 +213,4 @@ export function InvestorsTable({ investors, isLoading }: InvestorsTableProps) {
       ))}
     </div>
   )
-}
+})

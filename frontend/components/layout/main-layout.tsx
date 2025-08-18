@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { 
   BarChart3, 
   Users, 
@@ -17,6 +17,11 @@ import {
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { GlobalSearch } from '@/components/search/global-search'
+import { SavedSearches } from '@/components/search/saved-searches'
+import { NavigationErrorBoundary, useNavigationErrorBoundary } from './navigation-error-boundary'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertTriangle } from 'lucide-react'
 
 const navigation = [
   {
@@ -57,10 +62,87 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isNavigating, setIsNavigating] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
+  const { error: navError, resetError } = useNavigationErrorBoundary()
+
+  // Handle navigation loading states
+  useEffect(() => {
+    const handleStart = () => setIsNavigating(true)
+    const handleComplete = () => setIsNavigating(false)
+
+    // Listen for route change events
+    const originalPush = router.push
+    const originalReplace = router.replace
+
+    router.push = async (...args) => {
+      handleStart()
+      try {
+        await originalPush.apply(router, args)
+        handleComplete()
+      } catch (error) {
+        handleComplete()
+        throw error
+      }
+    }
+
+    router.replace = async (...args) => {
+      handleStart()
+      try {
+        await originalReplace.apply(router, args)
+        handleComplete()
+      } catch (error) {
+        handleComplete()
+        throw error
+      }
+    }
+
+    return () => {
+      router.push = originalPush
+      router.replace = originalReplace
+    }
+  }, [router])
+
+  // Safe navigation wrapper
+  const handleNavigation = (href: string) => {
+    try {
+      resetError()
+      router.push(href)
+    } catch (error) {
+      console.error('Navigation error:', error)
+    }
+  }
+
+  // Show navigation error if present
+  if (navError) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Navigation error occurred. Please try refreshing the page.
+            <Button onClick={resetError} className="mt-2 w-full">
+              Try Again
+            </Button>
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-background">
+    <NavigationErrorBoundary>
+      <div className="min-h-screen bg-background relative">
+        {/* Loading overlay for navigation */}
+        {isNavigating && (
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div className="text-center space-y-2">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="text-sm text-muted-foreground">Loading...</p>
+            </div>
+          </div>
+        )}
       {/* Mobile sidebar */}
       <div className={cn(
         'fixed inset-0 z-50 lg:hidden',
@@ -157,7 +239,28 @@ export function MainLayout({ children }: MainLayoutProps) {
               <span>32,780 investors • Real-time data</span>
             </div>
           </div>
+          
+          {/* Global Search - centered on larger screens */}
+          <div className="hidden md:flex flex-1 max-w-md mx-8">
+            <GlobalSearch 
+              className="w-full"
+              placeholder="Search investors, firms, or describe your needs..."
+            />
+          </div>
+          
           <div className="flex items-center space-x-4">
+            {/* Saved Searches */}
+            <div className="hidden lg:block">
+              <SavedSearches />
+            </div>
+            
+            {/* Mobile search button */}
+            <div className="md:hidden">
+              <GlobalSearch 
+                placeholder="Search..."
+                showShortcut={false}
+              />
+            </div>
             <ThemeToggle />
           </div>
         </div>
@@ -167,6 +270,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           {children}
         </main>
       </div>
-    </div>
+      </div>
+    </NavigationErrorBoundary>
   )
 }
