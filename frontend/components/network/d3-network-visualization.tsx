@@ -157,12 +157,12 @@ export function D3NetworkVisualization({
         .strength((d) => {
           // More negative = more repulsion for important nodes
           const baseStrength = -100
-          const tierMultiplier = Math.max(1, (3 - d.tier) * 0.5)
+          const tierMultiplier = Math.max(1, (3 - ((d as any).tier || 1)) * 0.5)
           return baseStrength * tierMultiplier
         }))
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force('collision', d3.forceCollide()
-        .radius((d) => getNodeSize(d) + 2))
+        .radius((d) => getNodeSize(d as NetworkNode) + 2))
 
     simulationRef.current = simulation
 
@@ -189,16 +189,16 @@ export function D3NetworkVisualization({
     // Add circles for nodes
     nodes
       .append('circle')
-      .attr('r', getNodeSize)
+      .attr('r', (d) => getNodeSize(d as NetworkNode))
       .attr('fill', getNodeColor)
       .attr('stroke', '#fff')
       .attr('stroke-width', 1.5)
 
     // Add labels for important nodes
     nodes
-      .filter((d) => d.tier <= 2 || getNodeSize(d) > 8)
+      .filter((d) => ((d as any).tier || 1) <= 2 || getNodeSize(d as NetworkNode) > 8)
       .append('text')
-      .attr('dy', (d) => getNodeSize(d) + 12)
+      .attr('dy', (d) => getNodeSize(d as NetworkNode) + 12)
       .attr('text-anchor', 'middle')
       .style('font-size', '10px')
       .style('font-weight', '500')
@@ -310,7 +310,7 @@ export function D3NetworkVisualization({
     if (!data.nodes.length) return
     
     const svg = d3.select(svgRef.current!)
-    const bounds = svg.select('.nodes').node()?.getBBox()
+    const bounds = (svg.select('.nodes').node() as SVGGElement)?.getBBox()
     
     if (bounds) {
       const fullWidth = width

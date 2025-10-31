@@ -177,7 +177,7 @@ export function FirmNetworking({ firm }: FirmNetworkingProps) {
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Limited Network (<100)</span>
+                <span className="text-sm font-medium">Limited Network (&lt;100)</span>
                 <div className="flex items-center space-x-2">
                   <span className="text-sm">{networkStats.networkTiers.limited_network}</span>
                   <div className="w-16 h-2 bg-muted rounded-full">

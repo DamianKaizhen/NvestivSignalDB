@@ -368,7 +368,29 @@ class ApiClient {
       const queryString = params.toString()
       const endpoint = `/api/network/graph${queryString ? `?${queryString}` : ''}`
       
-      return await this.request<NetworkGraphData>(endpoint)
+      const response = await this.request<any>(endpoint)
+      
+      // Transform API response to match expected interface
+      // API returns { nodes, edges, stats } but we need { nodes, links, metadata }
+      const transformedData: NetworkGraphData = {
+        nodes: response.nodes || [],
+        links: (response.edges || []).map((edge: any) => ({
+          source: edge.source,
+          target: edge.target,
+          value: edge.value || 1,
+          type: edge.type || 'investment',
+          strength: edge.strength || 0.5
+        })),
+        metadata: {
+          total_nodes: response.stats?.totalNodes || response.nodes?.length || 0,
+          total_edges: response.stats?.totalEdges || response.edges?.length || 0,
+          max_tier: 3, // Default value
+          sectors: [], // Will be computed from nodes if needed
+          locations: [] // Will be computed from nodes if needed
+        }
+      }
+      
+      return transformedData
     } catch (error) {
       // Fallback to mock data if API is not available
       console.warn('Network API not available, using mock data:', error)

@@ -10,9 +10,18 @@ import { formatCurrency, formatNumber } from '@/lib/utils'
 import type { Investor } from '@/lib/api'
 import { Skeleton } from '@/components/ui/skeleton'
 
+interface PaginationProps {
+  page: number
+  limit: number
+  total: number
+  hasMore: boolean
+  onPageChange: (page: number) => void
+}
+
 interface InvestorsTableProps {
   investors: Investor[]
   isLoading: boolean
+  pagination?: PaginationProps
 }
 
 const InvestorTableSkeleton = memo(function InvestorTableSkeleton() {
@@ -189,7 +198,7 @@ const InvestorRow = memo(function InvestorRow({ investor }: { investor: Investor
   )
 })
 
-export const InvestorsTable = memo(function InvestorsTable({ investors, isLoading }: InvestorsTableProps) {
+export const InvestorsTable = memo(function InvestorsTable({ investors, isLoading, pagination }: InvestorsTableProps) {
   if (isLoading) {
     return <InvestorTableSkeleton />
   }

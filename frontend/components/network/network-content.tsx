@@ -15,7 +15,7 @@ import {
   TrendingUp, 
   MapPin, 
   Target,
-  Route,
+  Workflow,
   Filter,
   BookOpen,
   AlertCircle,
@@ -76,8 +76,9 @@ export function NetworkContent() {
         return false
       }
 
-      // Filter by minimum connections
-      const nodeConnections = networkData.links.filter(
+      // Filter by minimum connections (safe check for links existence)
+      const links = networkData.links || []
+      const nodeConnections = links.filter(
         link => link.source === node.id || link.target === node.id
       ).length
       if (nodeConnections < filters.minConnections) {
@@ -99,8 +100,9 @@ export function NetworkContent() {
 
     // Get node IDs for filtering links
     const nodeIds = new Set(filteredNodes.map(n => n.id))
+    const links = networkData.links || []
 
-    let filteredLinks = networkData.links.filter(link => {
+    let filteredLinks = links.filter(link => {
       // Only include links between visible nodes
       const sourceId = typeof link.source === 'string' ? link.source : link.source.id
       const targetId = typeof link.target === 'string' ? link.target : link.target.id
@@ -300,7 +302,7 @@ export function NetworkContent() {
                   <span>Network</span>
                 </TabsTrigger>
                 <TabsTrigger value="warm-intros" className="flex items-center space-x-2">
-                  <Route className="h-4 w-4" />
+                  <Workflow className="h-4 w-4" />
                   <span>Warm Intros</span>
                 </TabsTrigger>
                 <TabsTrigger value="guide" className="flex items-center space-x-2">

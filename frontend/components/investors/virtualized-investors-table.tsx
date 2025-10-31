@@ -79,6 +79,7 @@ export const VirtualizedInvestorsTable = memo(function VirtualizedInvestorsTable
     <div className="border rounded-lg">
       <List
         height={height}
+        width="100%"
         itemCount={investors.length}
         itemSize={itemHeight}
         itemData={listData}
